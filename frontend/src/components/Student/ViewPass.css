@@ -1,0 +1,102 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.page-header {
+  background-color: #154360;
+  color: white;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-logout {
+  padding: 10px 20px;
+  background-color: #ff4d6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.content {
+  padding: 30px 40px;
+}
+
+.navigation-buttons {
+  margin-bottom: 20px;
+}
+.btn-secondary {
+  padding: 10px 24px;
+  background-color: #3b86d1;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.passes-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 28px;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.passes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.passes-table th, .passes-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.passes-table th {
+  color: #154360;
+  text-transform: uppercase;
+  font-size: 13px;
+  background-color: #e3f2fd;
+  font-weight: 600;
+}
+
+.passes-table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-badge {
+  padding: 7px 16px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-block;
+}
+.status-approved { background: #21bf06; color: white; }
+.status-rejected { background: #ff4d6b; color: white; }
+.status-pending { background: #ffde73; color: #333; }
+
+.no-passes {
+  background: #ffebee;
+  border: 1px solid #ff4d6b;
+  color: #dd175a;
+  padding: 22px;
+  border-radius: 7px;
+  text-align: center;
+  font-size: 1.06rem;
+}
+
+@media (max-width: 700px) {
+  .content, .passes-table-container {
+    padding: 10px;
+  }
+  .passes-table th, .passes-table td {
+    padding: 8px;
+  }
+}

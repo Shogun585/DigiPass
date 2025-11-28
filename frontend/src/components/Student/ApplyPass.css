@@ -1,0 +1,157 @@
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.page-header {
+  background-color: #154360;
+  color: white;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-logout {
+  padding: 10px 20px;
+  background-color: #ff4d6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-logout:hover {
+  background-color: #e6445f;
+}
+
+.content {
+  padding: 30px 40px;
+}
+
+.navigation-buttons {
+  margin-bottom: 24px;
+}
+
+.btn-secondary {
+  padding: 10px 24px;
+  background-color: #3b86d1;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #1e5090;
+}
+
+.apply-pass-form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 32px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.form-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.profile-section {
+  flex: 0 0 100px;
+}
+
+.profile-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder {
+  font-size: 48px;
+}
+
+.form-fields {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #154360;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.error {
+  color: #ff4d6b;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.pass-type-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-pass-type {
+  padding: 8px 20px;
+  border: 2px solid #3b86d1;
+  background: white;
+  color: #3b86d1;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pass-type.active, .btn-pass-type:active {
+  background: #3b86d1;
+  color: white;
+}
+
+.btn-submit {
+  padding: 12px 32px;
+  font-size: 16px;
+  background: #38ce3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background: #2cb027;
+}
+
+@media (max-width: 768px) {
+  .form-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .apply-pass-form {
+    padding: 15px;
+  }
+}
