@@ -18,6 +18,9 @@ npm install
 npm start
 ```
 ## Create MySQL Database
+```
+Change the username & password in backend\app\utils\database.py
+```
 
 ```sql
 CREATE DATABASE leavemanager;
