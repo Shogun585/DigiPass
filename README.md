@@ -17,6 +17,12 @@ npm install
 
 npm start
 ```
+## Create MySQL Database
+
+```sql
+CREATE DATABASE leavemanager;
+USE leavemanager;
+```
 
 ## How to start backend
 
