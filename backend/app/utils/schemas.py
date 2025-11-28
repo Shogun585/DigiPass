@@ -50,8 +50,9 @@ class PassCreate(BaseModel):
     leave_end: date
 
 # Base Schema for Warden to approve/ Reject the pass
-# class PassEvaluation(BaseModel):
-#     pass_status: PassStatus
+class PassEvaluation(BaseModel):
+    pass_status: PassStatus
+    
 class PassUpdate(BaseModel):
     status: PassStatus
 

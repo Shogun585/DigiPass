@@ -56,13 +56,40 @@ export const authAPI = {
 
 // Pass API
 export const passAPI = {
-  createPass: (passData) => api.post('/pass/', passData),
-  getMyPasses: () => api.get('/pass/my-passes'),
-  getAllPasses: () => api.get('/pass/all'),
-  getPendingPasses: () => api.get('/pass/pending'),
-  updatePassStatus: (passId, status) => 
-    api.patch(`/pass/${passId}/status`, { status }),
-};
+  createPass: (passData) => {
+      // const today = new Date(new Date().toLocaleDateString("en-US",{
+      //   timeZone: "Asia/Kolkata"
+      // })).toISOString().split('T')[0];
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const today = `${year}-${month}-${day}`;
+
+      console.log(`today's date : ${today}`)
+      
+      let passType = 'market';  
+      if (passData.passType) {
+        if (passData.passType.toLowerCase().includes('market') || passData.passType === 'market') {
+          passType = 'market';
+        } else if (passData.passType.toLowerCase().includes('leave') || passData.passType === 'leave') {
+          passType = 'leave';
+        }
+      }
+      
+      return api.post('/pass/', {
+        pass_type: passType,  
+        leave_start: passData.leave_start || today,
+        leave_end: passData.leave_end || today
+      });
+    },
+    
+    getMyPasses: () => api.get('/pass/my_pass'),  
+    getPendingPasses: () => api.get('/pass/pending'),
+    getAllPasses: () => api.get('/pass/all'),
+    updatePassStatus: (passId, status) => 
+      api.put(`/pass/status/${passId}`, { pass_status: status.toLowerCase() }) 
+  };
 
 // Verification API
 export const verifyAPI = {

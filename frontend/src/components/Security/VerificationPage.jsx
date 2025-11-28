@@ -183,20 +183,20 @@ const VerificationPage = () => {
           {verificationResult && (
             <div className={`verification-result ${verificationResult.valid ? 'success' : 'error'}`}>
               {verificationResult.valid ? (
-                <div className="pass-details">
+                 <div className="pass-details">
                   <h3>✓ Valid Pass Found</h3>
                   
-                  {verificationResult.user_details && (
+                  {verificationResult?.user_details && (
                     <div className="user-info">
                       <h4>Student Information</h4>
                       <div className="detail-row">
                         <strong>Name:</strong> 
-                        {verificationResult.user_details.first_name} {verificationResult.user_details.last_name}
+                        {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
                       </div>
                       <div className="detail-row">
-                        <strong>College ID:</strong> {verificationResult.user_details.id}
+                        <strong>College ID:</strong> {verificationResult.user_details?.id || 'N/A'}
                       </div>
-                      {verificationResult.user_details.contact_details && (
+                      {verificationResult.user_details?.contact_details && (
                         <div className="detail-row">
                           <strong>Contact:</strong> {verificationResult.user_details.contact_details}
                         </div>
@@ -204,42 +204,42 @@ const VerificationPage = () => {
                     </div>
                   )}
 
-                  {verificationResult.pass_details && (
+                  {verificationResult?.pass_details && (
                     <div className="pass-info">
                       <h4>Pass Details</h4>
                       <div className="detail-row">
                         <strong>Pass Type:</strong> 
                         <span className="pass-type-badge">
-                          {verificationResult.pass_details.pass_type.toUpperCase()}
+                          {verificationResult.pass_details?.pass_type?.toUpperCase() || 'N/A'}
                         </span>
                       </div>
                       <div className="detail-row">
-                        <strong>Valid From:</strong> {formatDate(verificationResult.pass_details.leave_start)}
+                        <strong>Valid From:</strong> {verificationResult.pass_details?.leave_start ? formatDate(verificationResult.pass_details.leave_start) : 'N/A'}
                       </div>
                       <div className="detail-row">
-                        <strong>Valid Until:</strong> {formatDate(verificationResult.pass_details.leave_end)}
+                        <strong>Valid Until:</strong> {verificationResult.pass_details?.leave_end ? formatDate(verificationResult.pass_details.leave_end) : 'N/A'}
                       </div>
                       <div className="detail-row">
                         <strong>Status:</strong>
                         <span className="status-badge status-approved">
-                          {verificationResult.pass_details.status.toUpperCase()}
+                          {verificationResult.pass_details?.pass_status?.toUpperCase() || 'N/A'}
                         </span>
                       </div>
                     </div>
                   )}
 
                   <div className="success-message">
-                    <p>{verificationResult.message}</p>
+                    <p>{verificationResult?.message || 'Verification successful'}</p>
                   </div>
                 </div>
               ) : (
                 <div className="error-details">
                   <h3>✗ Verification Failed</h3>
-                  <p>{verificationResult.message}</p>
+                  <p>{verificationResult?.message || 'Verification failed'}</p>
                   
-                  {verificationResult.user_details && (
+                  {verificationResult?.user_details && (
                     <div className="user-info-minimal">
-                      <p>User found: {verificationResult.user_details.first_name} {verificationResult.user_details.last_name}</p>
+                      <p>User found: {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}</p>
                       <p className="no-pass-msg">No valid pass for current date</p>
                     </div>
                   )}

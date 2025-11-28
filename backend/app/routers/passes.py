@@ -2,6 +2,7 @@ from fastapi import APIRouter,Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from ..utils import database, models, oauth2, schemas
 from typing import List
+from datetime import date
 
 router = APIRouter(prefix="/pass",tags=["Pass"])
 
@@ -53,6 +54,11 @@ def create(
     db: Session = Depends(database.get_db),
     current_user: models.Users = Depends(oauth2.get_current_user)
 ):
+    if not request.leave_start:
+        request.leave_start = date.today()
+    if not request.leave_end:
+        request.leave_end = date.today()
+
     """Create a new pass request (Students only)"""
     # Check if user is a student
     if current_user.role.lower() != "student":
@@ -102,7 +108,7 @@ def get_all_passes(
     passes = db.query(models.LeavePass).all()
     return passes
 
-@router.get("/my-passes", response_model=List[schemas.PassDisplay])
+@router.get("/my_pass", response_model=List[schemas.PassDisplay])
 def get_my_passes(
     db: Session = Depends(database.get_db),
     current_user: models.Users = Depends(oauth2.get_current_user)
@@ -113,10 +119,10 @@ def get_my_passes(
     ).all()
     return passes
 
-@router.patch("/{pass_id}/status", response_model=schemas.PassDisplay)
+@router.put("/status/{pass_id}", response_model=schemas.PassDisplay)
 def update_status(
     pass_id: int,
-    request: schemas.PassUpdate,
+    request: schemas.PassEvaluation,
     db: Session = Depends(database.get_db),
     current_user: models.Users = Depends(oauth2.get_current_warden)
 ):
@@ -132,7 +138,7 @@ def update_status(
         )
     
     # Update status
-    pass_obj.status = request.status.value
+    pass_obj.pass_status = request.pass_status.value
     db.commit()
     db.refresh(pass_obj)
     

@@ -62,7 +62,8 @@ async def verify_pass_by_barcode_scan(
 @router.get("/manual/{college_id}", response_model=schemas.VerificationResponse)
 def verify_pass_by_manual_entry(
     college_id: str,
-    db: Session = Depends(database.get_db)
+    db: Session = Depends(database.get_db),
+    current_user: models.Users = Depends(oauth2.get_current_guard)
 ):
     """
     Manually verify pass by entering college ID
@@ -118,11 +119,13 @@ def verify_pass_logic(college_id: str, db: Session) -> schemas.VerificationRespo
         message=f"Valid {valid_pass.pass_type} pass found for {user.first_name} {user.last_name}",
         pass_details=schemas.PassDisplay(
             pass_id=valid_pass.pass_id,
+            college_id=valid_pass.college_id,
             pass_type=valid_pass.pass_type,
             leave_start=valid_pass.leave_start,
             leave_end=valid_pass.leave_end,
-            status=valid_pass.status,
-            college_id=valid_pass.college_id
+            pass_status=valid_pass.pass_status,
+            request_time=valid_pass.request_time,
+            updated_at=valid_pass.updated_at
         ),
         user_details=schemas.User(
             id=user.id,

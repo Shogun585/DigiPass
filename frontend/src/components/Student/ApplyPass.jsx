@@ -11,7 +11,9 @@ const ApplyPass = () => {
     course: '',
     passType: ''
   });
+  
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
   const { user, logout } = useAuth();
   const { addPass } = usePass();
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ const ApplyPass = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const validationErrors = validateForm();
@@ -60,17 +62,25 @@ const ApplyPass = () => {
       return;
     }
 
-    // Add pass to context
-    addPass({
-      ...formData,
-      submittedBy: user.username
+    // Get today's date for pass validity
+    const today = new Date().toISOString().split('T')[0];
+
+    // Add pass via API (now it goes to backend!)
+    const result = await addPass({
+      name: formData.name,
+      admissionId: formData.admissionId,
+      course: formData.course,
+      passType: formData.passType,
+      leave_start: today,
+      leave_end: formData.passType === 'Market Pass' ? today : formData.leave_end || today
     });
 
-    // Show success message
-    alert('Pass application submitted successfully!');
-    
-    // Navigate to view passes
-    navigate('/view-pass');
+    if (result.success) {
+      alert('Pass application submitted successfully!');
+      navigate('/view-pass');
+    } else {
+      setError(result.error || 'Failed to create pass');
+    }
   };
 
   const handleLogout = () => {
@@ -133,7 +143,7 @@ const ApplyPass = () => {
                     name="admissionId"
                     value={formData.admissionId}
                     onChange={handleChange}
-                    placeholder="AXXXXCS1234"
+                    placeholder="AXXXXXXXXXX"
                   />
                   {errors.admissionId && <span className="error">{errors.admissionId}</span>}
                 </div>

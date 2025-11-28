@@ -1,17 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { usePass } from '../../context/PassContext';
+import { passAPI } from '../../services/api';
 import './ViewPass.css';
 
 const ViewPass = () => {
+  const [passes, setPasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
   const { user, logout } = useAuth();
-  const { passes } = usePass();
   const navigate = useNavigate();
 
-  // Filter passes for current user (if storing submittedBy)
-  // or use passes directly if displaying all
-  const userPasses = passes.filter(pass => pass.submittedBy === user?.username);
+  useEffect(() => {
+    fetchPasses();
+  }, []);
+
+  const fetchPasses = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      console.log('Fetching passes from API...');
+      const response = await passAPI.getMyPasses();
+      console.log('API Response:', response.data);
+      setPasses(response.data || []);
+    } catch (err) {
+      console.error('Error fetching passes:', err);
+      setError(err.response?.data?.detail || 'Failed to fetch passes');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -19,11 +39,9 @@ const ViewPass = () => {
   };
 
   const getStatusClass = (status) => {
-    switch ((status || '').toLowerCase()) {
-      case 'active':
+    switch((status || '').toLowerCase()) {
       case 'approved':
         return 'status-approved';
-      case 'expired':
       case 'rejected':
         return 'status-rejected';
       case 'pending':
@@ -33,12 +51,22 @@ const ViewPass = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="page-container">
       <header className="page-header">
         <div>
           <h1>IMSEC Hostel Portal</h1>
-          <p>My Passes</p>
+          <p>My Passes - {user?.first_name} {user?.last_name}</p>
         </div>
         <button onClick={handleLogout} className="btn-logout">
           Logout
@@ -58,7 +86,18 @@ const ViewPass = () => {
         <div className="passes-table-container">
           <h2>Student view pass page</h2>
 
-          {(!userPasses || userPasses.length === 0) ? (
+          {loading ? (
+            <div className="no-passes">
+              <p>Loading passes...</p>
+            </div>
+          ) : error ? (
+            <div className="no-passes error">
+              <p>{error}</p>
+              <button onClick={fetchPasses} className="btn-secondary">
+                Retry
+              </button>
+            </div>
+          ) : (!passes || passes.length === 0) ? (
             <div className="no-passes">
               <p>No passes found. Apply for a pass!</p>
             </div>
@@ -66,21 +105,23 @@ const ViewPass = () => {
             <table className="passes-table">
               <thead>
                 <tr>
-                  <th>Admission No.</th>
-                  <th>Name</th>
-                  <th>Pass type</th>
-                  <th>Status</th>
+                  <th>ADMISSION NO.</th>
+                  <th>NAME</th>
+                  <th>PASS TYPE</th>
+                  <th>STATUS</th>
                 </tr>
               </thead>
               <tbody>
-                {userPasses.map((pass, idx) => (
-                  <tr key={pass.id || idx}>
-                    <td>{pass.admissionId}</td>
-                    <td>{pass.name}</td>
-                    <td>{pass.passType}</td>
+                {passes.map((pass, idx) => (
+                  <tr key={pass.pass_id || idx}>
+                    <td>{pass.college_id || user?.id}</td>
+                    <td>{user?.first_name} {user?.last_name}</td>
+                    <td style={{textTransform: 'capitalize'}}>
+                      {pass.pass_type}
+                    </td>
                     <td>
-                      <span className={`status-badge ${getStatusClass(pass.status)}`}>
-                        {pass.status}
+                      <span className={`status-badge ${getStatusClass(pass.pass_status)}`}>
+                        {pass.pass_status?.toUpperCase() || 'PENDING'}
                       </span>
                     </td>
                   </tr>
