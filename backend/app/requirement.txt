@@ -11,3 +11,4 @@ opencv-python-headless
 numpy
 pillow
 pyzxing
+python-dotenv
