@@ -350,5 +350,3 @@ def extract_barcode_from_image(path_to_image):
     
     print("[DEBUG] All methods failed")
     return {"ok": False, "decoded": [], "reason": "no barcode or text detected"}
-
-

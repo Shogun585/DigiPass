@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -39,15 +38,40 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="logo-container">
-          <h1>IMSEC</h1>
+    <div className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-gradient-to-br from-sky-900 to-blue-500
+    ">
+      <div className="
+        w-[400px]
+        p-10
+        bg-white
+        rounded-md
+        shadow-2xl
+      ">
+        <div className="
+            text-center
+        ">
+          <h1 className="
+            text-[48px]
+            text-[#154360]
+            m-0
+          ">IMSEC</h1>
         </div>
-        <h2>IMSEC Hostel Portal</h2>
+        <h2 className="
+            text-center
+            text-[#3b86d1]
+            mb-7
+            text-2xl
+        ">IMSEC Hostel Portal</h2>
         
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="
+            mb-5
+          ">
             <input
               type="text"
               placeholder="College ID"
@@ -55,10 +79,21 @@ const Login = () => {
               onChange={(e) => setUsername(e.target.value)}
               required
               disabled={loading}
+              className="
+                w-full
+                p-3
+                border-2
+                border-solid
+                border-[#e0e0e0]
+                rounded-md
+                text-sm
+                transition-colors duration-300 focus:outline-none focus:border-[#3b86d1]
+
+              "
             />
           </div>
           
-          <div className="form-group">
+          <div className="mb-5">
             <input
               type="password"
               placeholder="Password"
@@ -66,12 +101,42 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
+              className="
+                w-full
+                p-3
+                border-2
+                border-solid
+                border-[#e0e0e0]
+                rounded-md
+                text-sm
+                transition-colors duration-300 focus:outline-none focus:border-[#3b86d1]
+
+              "
             />
           </div>
           
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="
+            text-[#ff4d6b]
+            p-2.5
+            bg-[#ffe0e6]
+            rounded-[4px]
+            mb-4
+            text-center
+            text-[14px]
+          ">{error}</div>}
           
-          <button type="submit" className="btn-signin" disabled={loading}>
+          <button type="submit" className="
+            w-full
+            p-[14px]
+            bg-[#38ce3c]
+            text-white
+            border-none
+            rounded-md
+            text-lg
+            font-semibold
+            cursor-pointer
+            transition-colors duration-300 hover:bg-[#2fb533]
+          " disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
