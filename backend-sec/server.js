@@ -16,6 +16,13 @@ app.use('/user', userRouter)
 app.use('/pass', passesRouter)
 app.use('/verification', verificationRouter)
 
+app.get('/', (req, res)=>{
+    return res.json({
+        message : "IMSEC Hostel Pass Manager API",
+        status : "running..."
+    }).status(200)
+})
+
 app.listen(PORT, ()=>{
     console.log(`App is listening on port ${PORT}`)
 })
