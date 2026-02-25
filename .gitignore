@@ -1,1 +1,4 @@
 .env.local
+backend-sec/node_modules
+backend-sec/generated/prisma
+backend-sec/.env
