@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role{
+  student
+  warden
+  guard
+  other
+}
+
+enum PassType{
+  leave
+  market
+  other
+}
+
+enum PassStatus{
+  pending
+  approved
+  rejected
+}
+
+enum LogAction{
+  checked_in @map("checked in")
+  checked_out @map("checked out")
+  scan
+}
+
+enum StudentStatus{
+  out
+  in
+  market
+}
+
+model User{
+  id String @id @db.VarChar(25)
+  password String @db.VarChar(255)
+  firstName String @map("first_name") @db.VarChar(20)
+  lastName String @map("last_name") @db.VarChar(20)
+  role Role
+  contactDetails String? @map("contact_details") @db.VarChar(50)
+
+  leavePasses LeavePass[]
+  logs Logs[]
+
+  @@map("users")
+}
+
+model LeavePass{
+  passId Int @id@default(autoincrement()) @map("pass_id")
+  collegeId String @map("college_id") @db.VarChar(25)
+  passType PassType @map("pass_type")
+  leaveStart DateTime @map("leave_start") @db.Date
+  leaveEnd DateTime @map("leave_end") @db.Date
+  passStatus PassStatus @default(pending) @map("pass_status")
+  requestTime DateTime @default(now()) @map("request_time") @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  college User @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  logs Logs[]
+
+  @@index([collegeId], name: "college_id_idx")
+  @@map("leave_pass")
+}
+
+model Logs{
+  scanId Int @id @default(autoincrement()) @map("screen_id")
+  action LogAction
+  passId Int @map("pass_id")
+  staffId String @map("staff_id") @db.VarChar(25)
+  scanTime DateTime @default(now()) @map("scan_time") @db.Timestamp()
+  studentSuccess StudentStatus @default(in) @map("student_status")
+
+  leavePass LeavePass @relation(fields: [passId], references: [passId])
+  staff User @relation(fields: [staffId], references: [id])
+
+  @@index([passId], name: "pass_id_idx")
+  @@index([staffId], name: "staff_id_idx")
+  @@map("logs")
+}
