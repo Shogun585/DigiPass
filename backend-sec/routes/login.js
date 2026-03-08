@@ -1,6 +1,6 @@
 import express from "express"
 import {loginSchema} from "../schemas/zodSchema";
-import prisma from "../prisma";
+import prisma from "../utils/prisma";
 import {verifyPassword} from "../utils/hash";
 import {generateToken} from "../utils/token";
 
