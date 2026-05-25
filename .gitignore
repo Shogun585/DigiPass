@@ -2,3 +2,5 @@
 backend-sec/node_modules
 backend-sec/generated/prisma
 backend-sec/.env
+frontend/node_modules
+js-based-barcode-reader/
