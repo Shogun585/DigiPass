@@ -1,3 +1,4 @@
 .env
 .idea
 .github
+frontend\node_modules
