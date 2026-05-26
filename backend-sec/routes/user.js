@@ -1,57 +1,31 @@
-import express from "express"
-import {signupSchema} from "../schemas/zodSchema";
-import prisma from "../utils/prisma";
-import {encryptPassword} from "../utils/hash";
+const express = require('express');
+const prisma = require('../utils/database');
+const hash = require('../utils/hash');
+const { schemas, validate } = require('../utils/schemas');
 
-const userRouter = express.Router()
+const router = express.Router();
 
-
-userRouter.post('/', async (req, res)=>{
-
-    const body = req.body;
-
-    const {success, data} = signupSchema.safeParse(body)
-
-    if(!success){
-        return res.json({
-            message : "Invalid inputs"
-        }).status(411)
-    }
-
+router.post('/', validate(schemas.userCreate), async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({
-            where : {
-                id : body.id
-            }
-        })
-
-        if(user){
-            return res.json({
-                message : "User already exist"
-            }).status(409)
-        }else{
-            const response = await prisma.user.create({
-                data : {
-                    id : body.id,
-                    password : encryptPassword(body.password),
-                    firstName : body.firstName,
-                    lastName : body.lastName,
-                    role : body.role,
-                    contactDetails : body.contactDetails
-                }
-            })
-
-            return res.json({
-                message : "User added successfully!!"
-            }).status(200)
+        const existingUser = await prisma.user.findUnique({ where: { id: req.body.id } });
+        if (existingUser) {
+            return res.status(409).json({ detail: `User with ${req.body.id} already present` });
         }
-    }catch (e) {
-        console.error(e)
 
-        return res.json({
-            message : "an error occurred"
-        }).status(400)
+        const hashedPassword = await hash.encrypt(req.body.password);
+
+        const newUser = await prisma.user.create({
+            data: {
+                ...req.body,
+                password: hashedPassword
+            }
+        });
+
+        const { password, ...userResponse } = newUser;
+        res.status(201).json(userResponse);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-})
+});
 
-export default userRouter
+module.exports = router;

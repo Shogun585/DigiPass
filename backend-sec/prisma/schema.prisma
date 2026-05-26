@@ -5,89 +5,102 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // e.g., postgresql://postgres.[project]:[password]@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true
+  directUrl = env("DIRECT_URL")   // e.g., postgresql://postgres.[project]:[password]@aws-0-region.pooler.supabase.com:5432/postgres
 }
 
-enum Role{
+// --- ENUMS ---
+
+enum Role {
   student
   warden
   guard
+  admin
   other
 }
 
-enum PassType{
+enum PassType {
   leave
   market
   other
 }
 
-enum PassStatus{
+enum PassStatus {
   pending
   approved
   rejected
 }
 
-enum LogAction{
-  checked_in @map("checked in")
-  checked_out @map("checked out")
+// Added for the Logs table
+enum LogAction {
+  checked_in
+  checked_out
   scan
 }
 
-enum StudentStatus{
+// Added for the Logs table
+enum StudentStatus {
   out
   in
   market
 }
 
-model User{
-  id String @id @db.VarChar(25)
-  password String @db.VarChar(255)
-  firstName String @map("first_name") @db.VarChar(20)
-  lastName String @map("last_name") @db.VarChar(20)
-  role Role
-  contactDetails String? @map("contact_details") @db.VarChar(50)
 
-  leavePasses LeavePass[]
-  logs Logs[]
+// --- MODELS ---
+
+model User {
+  id              String      @id @db.VarChar(25)
+  password        String      @db.VarChar(255)
+  first_name      String      @db.VarChar(20)
+  last_name       String      @db.VarChar(20)
+  role            Role
+  contact_details String?     @db.VarChar(50)
+  parent_email    String?     @db.VarChar(100) // Added for notifications
+  
+  // Relationships
+  leave_passes    LeavePass[]
+  logs            Log[]       // One-to-many relation to Logs (as staff)
 
   @@map("users")
 }
 
-model LeavePass{
-  passId Int @id@default(autoincrement()) @map("pass_id")
-  collegeId String @map("college_id") @db.VarChar(25)
-  passType PassType @map("pass_type")
-  leaveStart DateTime @map("leave_start") @db.Date
-  leaveEnd DateTime @map("leave_end") @db.Date
-  passStatus PassStatus @default(pending) @map("pass_status")
-  requestTime DateTime @default(now()) @map("request_time") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+model LeavePass {
+  pass_id      Int        @id @default(autoincrement())
+  college_id   String     @db.VarChar(25)
+  pass_type    PassType
+  leave_start  DateTime   @db.Date
+  leave_end    DateTime   @db.Date
+  pass_status  PassStatus @default(pending)
+  request_time DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
 
-  college User @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  logs Logs[]
+  // Relationships
+  college      User       @relation(fields: [college_id], references: [id])
+  logs         Log[]      // One-to-many relation to Logs
 
-  @@index([collegeId], name: "college_id_idx")
+  @@index([college_id])
   @@map("leave_pass")
 }
 
-model Logs{
-  scanId Int @id @default(autoincrement()) @map("screen_id")
-  action LogAction
-  passId Int @map("pass_id")
-  staffId String @map("staff_id") @db.VarChar(25)
-  scanTime DateTime @default(now()) @map("scan_time") @db.Timestamp()
-  studentSuccess StudentStatus @default(in) @map("student_status")
+// New model for tracking student entries/exits and scanning events
+model Log {
+  scan_id        Int           @id @default(autoincrement())
+  pass_id        Int
+  staff_id       String        @db.VarChar(25)
+  action         LogAction
+  student_status StudentStatus @default(in)
+  scan_time      DateTime?     @default(now()) @db.Timestamp(6)
 
-  leavePass LeavePass @relation(fields: [passId], references: [passId])
-  staff User @relation(fields: [staffId], references: [id])
+  // Relationships
+  leave_pass     LeavePass     @relation(fields: [pass_id], references: [pass_id])
+  staff          User          @relation(fields: [staff_id], references: [id])
 
-  @@index([passId], name: "pass_id_idx")
-  @@index([staffId], name: "staff_id_idx")
+  @@index([pass_id])
+  @@index([staff_id])
   @@map("logs")
 }

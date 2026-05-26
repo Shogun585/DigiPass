@@ -1,23 +1,13 @@
-import bcrypt from "bcrypt"
+const bcrypt = require('bcrypt');
 
-const saltRounds = 10
+const Hashing = {
+    encrypt: async (password) => {
+        const salt = await bcrypt.genSalt(10);
+        return bcrypt.hash(password, salt);
+    },
+    verify: async (plainPassword, hashedPassword) => {
+        return bcrypt.compare(plainPassword, hashedPassword);
+    }
+};
 
-export const encryptPassword = function (password){
-    bcrypt.hash(password, saltRounds, function (err, hash){
-        try{
-            return hash
-        }catch (e) {
-            console.error(e)
-        }
-    })
-}
-
-export const verifyPassword = function (plainPassword, hashedPassword) {
-    bcrypt.compare(plainPassword, hashedPassword, function (err, result){
-        try {
-            return result
-        }catch (e) {
-            console.error(e)
-        }
-    })
-}
+module.exports = Hashing;

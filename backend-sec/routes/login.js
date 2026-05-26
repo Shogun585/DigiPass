@@ -1,74 +1,33 @@
-import express from "express"
-import {loginSchema} from "../schemas/zodSchema";
-import prisma from "../utils/prisma";
-import {verifyPassword} from "../utils/hash";
-import {generateToken} from "../utils/token";
+const express = require('express');
+const prisma = require('../utils/database');
+const hash = require('../utils/hash');
+const { createAccessToken } = require('../utils/token1');
 
-const loginRouter = express.Router()
+const router = express.Router();
 
-loginRouter.post('/', async(req, res)=>{
-    const {username, password} = req.body;
+router.post('/', async (req, res) => {
+    const { username, password } = req.body; // Form data or JSON
 
-    const {data, success} = loginSchema.safeParse({
-        username : username,
-        password : password
-    })
-
-    if(!success){
-        return res.json({
-            message : "Invalid inputs"
-        }).status(411)
+    const user = await prisma.user.findUnique({ where: { id: username } });
+    if (!user) {
+        return res.status(404).json({ detail: "Couldn't find the user" });
     }
 
-    try{
-        const user = await prisma.user.findFirst({
-            where : {
-                id : username
-            },
-            select : {
-                password : true,
-                id : true,
-                firstName : true,
-                lastName : true,
-                role : true
-            }
-        })
-
-        if(!user){
-            return res.json({
-                message : "Couldn't find the user"
-            }).status(404)
-        }else{
-            const checkPassword = verifyPassword(password, user.password)
-
-            if(!checkPassword){
-                return res.json({
-                    message : "Incorrect credentials"
-                }).status(404)
-            }else {
-                const token = generateToken({
-                    "sub" : user.id
-                })
-
-                return res.json({
-                    user_details : {
-                        id : user.id,
-                        first_name : user.firstName,
-                        last_name : user.lastName,
-                        role : user.role
-                    }
-                }).status(200)
-            }
-        }
-
-    } catch (e) {
-        console.error(e)
-
-        res.json({
-            message : "an error has occured"
-        }).status(404)
+    const isValid = await hash.verify(password, user.password);
+    if (!isValid) {
+        return res.status(404).json({ detail: "Incorrect credentials" });
     }
 
-})
+    const accessToken = createAccessToken({ sub: user.id });
+    
+    // Omit password from response
+    const { password: _, ...userWithoutPassword } = user;
 
-export default loginRouter
+    res.json({
+        access_token: accessToken,
+        token_type: "bearer",
+        user: userWithoutPassword
+    });
+});
+
+module.exports = router;
