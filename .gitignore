@@ -3,4 +3,7 @@
 .github
 frontend/node_modules
 
-./js-based-barcode-reader/
+backend-sec/node_modules
+backend-sec/.env
+
+js-based-barcode-reader/
