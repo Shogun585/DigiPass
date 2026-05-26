@@ -1,4 +1,6 @@
 .env
 .idea
 .github
-frontend\node_modules
+frontend/node_modules
+
+js-based-barcode-reader/
