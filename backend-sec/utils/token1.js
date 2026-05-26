@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
+const SECRET_KEY = process.env.SECRET_KEY;
 const ACCESS_TOKEN_EXPIRE_TIME = '20m';
 
 const createAccessToken = (data) => {
