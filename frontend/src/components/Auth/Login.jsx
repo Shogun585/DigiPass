@@ -52,10 +52,10 @@ const Login = () => {
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center font-bold tracking-tight">
-              IM
+              IMS
             </div>
             <div>
-              <div className="text-sm uppercase tracking-[0.2em] text-white/60">Institute</div>
+              {/* <div className="text-sm uppercase tracking-[0.2em] text-white/60">Institute</div> */}
               <div className="font-semibold">IMS Engineering College</div>
             </div>
           </div>
@@ -91,10 +91,10 @@ const Login = () => {
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <div className="w-11 h-11 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold">
-              IM
+              IMS
             </div>
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Institute</div>
+              {/* <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Institute</div> */}
               <div className="font-semibold text-slate-900">IMSEC Hostel Portal</div>
             </div>
           </div>
@@ -118,7 +118,7 @@ const Login = () => {
                 <input
                   id="username"
                   type="text"
-                  placeholder="e.g. 21CS1234"
+                  placeholder="e.g. AXXXXXX1234"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
