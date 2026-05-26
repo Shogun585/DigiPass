@@ -1,9 +1,9 @@
-import express from "express"
-import cors from "cors"
-import loginRouter from "./routes/login";
-import userRouter from "./routes/user";
-import passesRouter from "./routes/passes";
-import verificationRouter from "./routes/verfification";
+const express = require("express")
+const cors = require("cors")
+const loginRouter = require("./routes/login.js")
+const userRouter = require("./routes/user.js")
+const passesRouter = require("./routes/passes.js")
+const verificationRouter = require("./routes/verfification.js")
 
 const app = express()
 const PORT = 8000
