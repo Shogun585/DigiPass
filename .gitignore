@@ -3,4 +3,4 @@
 .github
 frontend/node_modules
 
-js-based-barcode-reader/
+./js-based-barcode-reader/
