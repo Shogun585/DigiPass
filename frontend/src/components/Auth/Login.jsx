@@ -56,7 +56,7 @@ const Login = () => {
             </div>
             <div>
               {/* <div className="text-sm uppercase tracking-[0.2em] text-white/60">Institute</div> */}
-              <div className="font-semibold">IMS Engineering College</div>
+              <div className="font-semibold text-lg">DigiPass</div>
             </div>
           </div>
 
