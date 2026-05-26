@@ -11,6 +11,8 @@ const ViewPass = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const now = new Date().getDate()
+
   useEffect(() => {
     fetchPasses();
   }, []);
@@ -170,20 +172,27 @@ const ViewPass = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {passes.map((pass, idx) => (
-                    <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
-                      <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
-                      <td className="px-6 py-4 text-slate-700">{user?.first_name} {user?.last_name}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium capitalize ring-1 ring-indigo-100">
-                          {pass.pass_type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <StatusBadge status={pass.pass_status} />
-                      </td>
-                    </tr>
-                  ))}
+                  {
+                    
+                    passes.map((pass, idx) => {
+                      const given = new Date(pass.leave_start).getDate()
+                      if(given === now){
+                        return <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
+                          <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
+                          <td className="px-6 py-4 text-slate-700">{user?.first_name} {user?.last_name}</td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium capitalize ring-1 ring-indigo-100">
+                              {pass.pass_type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <StatusBadge status={pass.pass_status} />
+                          </td>
+                        </tr>  
+                      }
+                      
+                    })
+                  }
                 </tbody>
               </table>
             </div>
