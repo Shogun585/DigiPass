@@ -19,6 +19,56 @@ router.post('/', getCurrentUser, requireRole(['student']), validate(schemas.pass
     }
 
     try {
+        const pendingPass = await prisma.leavePass.findFirst({
+            where : {
+                college_id : req.user.id,
+                pass_status : 'pending'
+            },
+            orderBy : {
+                request_time : 'desc'
+            }
+        });
+
+        if(pendingPass){
+            return res.status(403).json({
+                detail : "Action denied: You already have a pending pass request waiting for warden approval."
+            })
+        }
+
+        const latestLog = await prisma.log.findFirst({
+            where : {
+                leave_pass : {
+                    college_id : req.user.id
+                }
+            },
+            orderBy : {
+                scan_time : 'desc'
+            }
+        });
+
+        if(latestLog && latestLog.student_status != 'in'){
+            return res.status(403).json({
+                detail : "Action denied: The security logs show you are currently out of the hostel. You must check back in before applying for a new pass."
+            })
+        }
+
+        const today = new Date()
+
+        const unusedApprovedPass = await prisma.leavePass.findFirst({
+            where : {
+                college_id : req.user.id,
+                pass_status : 'approved',
+                leave_end : {gte : today},
+                logs : {none : {}}
+            }
+        });
+
+        if(unusedApprovedPass){
+            return res.status(403).json({
+                detail : `Action denied: You have an unused approved ${unusedApprovedPass.pass_type} pass. You must use it (or let it expire) before applying again.`
+            });
+        }
+
         const newPass = await prisma.leavePass.create({
             data: {
                 pass_type,
