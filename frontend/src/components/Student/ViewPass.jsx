@@ -11,7 +11,7 @@ const ViewPass = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const now = new Date().getDate()
+  const now = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
     fetchPasses();
@@ -175,7 +175,7 @@ const ViewPass = () => {
                   {
                     
                     passes.map((pass, idx) => {
-                      const given = new Date(pass.leave_start).getDate()
+                      const given = new Date(pass.leave_start).toISOString().split('T')[0]
                       if(given === now){
                         return <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
                           <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
