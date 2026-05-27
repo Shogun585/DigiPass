@@ -5,9 +5,6 @@ const API_BASE_URL = 'http://localhost:8000';
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Request interceptor - Add auth token
@@ -41,13 +38,13 @@ api.interceptors.response.use(
 // Authentication API
 export const authAPI = {
   login: async (username, password) => {
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
     
-    const response = await api.post('/login/', formData, {
+    const response = await api.post('/login/', {
+      username,
+      password
+    }, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
     });
     return response.data;
@@ -57,9 +54,6 @@ export const authAPI = {
 // Pass API
 export const passAPI = {
   createPass: (passData) => {
-      // const today = new Date(new Date().toLocaleDateString("en-US",{
-      //   timeZone: "Asia/Kolkata"
-      // })).toISOString().split('T')[0];
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -98,11 +92,14 @@ export const verifyAPI = {
     formData.append('file', file);
     return api.post('/verify/scan', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     });
   },
   manualVerify: (collegeId) => api.get(`/verify/manual/${collegeId}`),
+
+  checkOut : (passId) => api.post(`/verify/checkout/${passId}`),
+  checkIn : (passId) => api.post(`/verify/checkin/${passId}`)
 };
 
 export default api;
