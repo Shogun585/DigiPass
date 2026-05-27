@@ -14,7 +14,7 @@ app.use(cors())
 app.use('/login', loginRouter)
 app.use('/user', userRouter)
 app.use('/pass', passesRouter)
-app.use('/verification', verificationRouter)
+app.use('/verify', verificationRouter)
 
 app.get('/', (req, res)=>{
     return res.json({
