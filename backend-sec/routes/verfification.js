@@ -16,7 +16,6 @@ const verifyPassLogic = async (collegeId) => {
 
     const { password, ...userWithoutPassword } = user;
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const validPass = await prisma.leavePass.findFirst({
         where: {
@@ -24,6 +23,9 @@ const verifyPassLogic = async (collegeId) => {
             pass_status: 'approved',
             leave_start: { lte: today },
             leave_end: { gte: today }
+        },
+        orderBy : {
+            request_time : 'desc'
         }
     });
 
@@ -43,6 +45,76 @@ const verifyPassLogic = async (collegeId) => {
         user_details: userWithoutPassword
     };
 };
+
+router.post('/checkout/:pass_id', getCurrentUser, requireRole(['guard']), async(req, res)=>{
+    const passId = parseInt(req.params.pass_id);
+
+    try{
+        const pass = await prisma.leavePass.findUnique({
+            where : {
+                pass_id : passId
+            }
+        })
+
+        if(!pass){
+            return res.status(404).json({
+                detail : "Pass not found"
+            })
+        }
+
+        const newLog = await prisma.log.create({
+            data : {
+                pass_id : passId,
+                staff_id : req.user.id,
+                action : 'checked_out',
+                student_status : 'out'
+            }
+        });
+
+        res.json({
+            detail : "Student successfully checked out",
+            log : newLog
+        })
+    }catch(err){
+        res.status(500).json({
+            error : err.message
+        })
+    }
+});
+
+router.post('/checkin/:pass_id', getCurrentUser, requireRole(['guard']), async(req, res)=>{
+    const passId = parseInt(req.params.pass_id);
+
+    try{
+        const pass = await prisma.leavePass.findUnique({
+            where : {
+                pass_id : passId
+            }
+        })
+
+        if (!pass){
+            return res.status(404).json({ detail: "Pass not found" });
+        }
+
+        const newLog = await prisma.log.create({
+            data : {
+                pass_id : passId,
+                staff_id : req.user.id,
+                action : 'checked_in',
+                student_status : 'in'
+            }
+        })
+
+        res.json({
+            detail : "Student successfully checked in",
+            log : newLog
+        })
+    }catch(err){
+        res.status(500).json({
+            error : err.message
+        });
+    }
+})
 
 router.post('/scan', getCurrentUser, requireRole(['guard']), upload.single('file'), async (req, res) => {
     if (!req.file) {
