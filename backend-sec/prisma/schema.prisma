@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --- ENUMS ---
+
+enum Role {
+  student
+  warden
+  guard
+  admin
+  other
+}
+
+enum PassType {
+  leave
+  market
+  other
+}
+
+enum PassStatus {
+  pending
+  approved
+  rejected
+}
+
+// Added for the Logs table
+enum LogAction {
+  checked_in
+  checked_out
+  scan
+}
+
+// Added for the Logs table
+enum StudentStatus {
+  out
+  in
+  market
+}
+
+
+// --- MODELS ---
+
+model User {
+  id              String      @id @db.VarChar(25)
+  password        String      @db.VarChar(255)
+  first_name      String      @db.VarChar(20)
+  last_name       String      @db.VarChar(20)
+  role            Role
+  contact_details String?     @db.VarChar(50)
+  parent_email    String?     @db.VarChar(100) // Added for notifications
+  
+  // Relationships
+  leave_passes    LeavePass[]
+  logs            Log[]       // One-to-many relation to Logs (as staff)
+
+  @@map("users")
+}
+
+model LeavePass {
+  pass_id      Int        @id @default(autoincrement())
+  college_id   String     @db.VarChar(25)
+  pass_type    PassType
+  leave_start  DateTime   @db.Date
+  leave_end    DateTime   @db.Date
+  pass_status  PassStatus @default(pending)
+  request_time DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Relationships
+  college      User       @relation(fields: [college_id], references: [id])
+  logs         Log[]      // One-to-many relation to Logs
+
+  @@index([college_id])
+  @@map("leave_pass")
+}
+
+// New model for tracking student entries/exits and scanning events
+model Log {
+  scan_id        Int           @id @default(autoincrement())
+  pass_id        Int
+  staff_id       String        @db.VarChar(25)
+  action         LogAction
+  student_status StudentStatus @default(in)
+  scan_time      DateTime?     @default(now()) @db.Timestamp(6)
+
+  // Relationships
+  leave_pass     LeavePass     @relation(fields: [pass_id], references: [pass_id])
+  staff          User          @relation(fields: [staff_id], references: [id])
+
+  @@index([pass_id])
+  @@index([staff_id])
+  @@map("logs")
+}
