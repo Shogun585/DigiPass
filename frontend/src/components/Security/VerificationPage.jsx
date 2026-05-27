@@ -10,6 +10,9 @@ const VerificationPage = () => {
   const [scanMode, setScanMode] = useState('manual');
   const fileInputRef = useRef(null);
 
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionMessage, setActionMessage] = useState(null);
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -64,6 +67,7 @@ const VerificationPage = () => {
     setCollegeId('');
     setVerificationResult(null);
     setScanMode('manual');
+    setActionMessage(null);
   };
 
   const formatDate = (dateString) =>
@@ -75,6 +79,28 @@ const VerificationPage = () => {
       <span className="text-sm font-medium text-slate-900">{children}</span>
     </div>
   );
+
+  const handleGuardAction = async (actionType, passId) =>{
+    setActionLoading(true);
+    setActionMessage(null);
+
+    try{
+      if(actionType === 'checkout'){
+        const response = await verifyAPI.checkOut(passId);
+        setActionMessage({ type: 'success', text: response.data.detail });
+      }else if (actionType === 'checkin') {
+        const response = await verifyAPI.checkIn(passId);
+        setActionMessage({ type: 'success', text: response.data.detail });
+      }
+    }catch(error){
+      setActionMessage({ 
+        type: 'error', 
+        text: error.response?.data?.detail || 'Failed to process action' 
+      });
+    }finally{
+      setActionLoading(false)
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
@@ -276,6 +302,41 @@ const VerificationPage = () => {
                             {verificationResult.pass_details?.pass_status?.toUpperCase() || 'N/A'}
                           </span>
                         </Row>
+                      </div>
+                    )}
+                    {verificationResult?.pass_details && (
+                      <div className="mt-4 pt-4 border-t border-emerald-200/60">
+                        <h4 className="text-sm font-semibold text-slate-900 mb-3">Guard Actions</h4>
+                        
+                        {actionMessage ? (
+                          <div className={`p-3 rounded-lg text-sm font-medium ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                            {actionMessage.text}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
+                              disabled={actionLoading}
+                              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                              Check OUT
+                            </button>
+                            
+                            <button
+                              onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
+                              disabled={actionLoading}
+                              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                              Check IN
+                            </button>
+                          </div>
+                        )}
+                        
+                        {actionLoading && (
+                          <p className="text-xs text-center text-slate-500 mt-3 animate-pulse">Processing action...</p>
+                        )}
                       </div>
                     )}
                   </div>
