@@ -53,6 +53,7 @@ router.post('/', getCurrentUser, requireRole(['student']), validate(schemas.pass
         }
 
         const today = new Date()
+        today.setHours(0, 0, 0, 0);
 
         const unusedApprovedPass = await prisma.leavePass.findFirst({
             where : {
@@ -99,6 +100,30 @@ router.get('/all', getCurrentUser, requireRole(['warden']), async (req, res) => 
 });
 
 router.get('/my_pass', getCurrentUser, requireRole(['student']), async (req, res) => {
+    try {
+        const passes = await  prisma.leavePass.findMany({
+            where : {
+                college_id : req.user.id
+            },
+            orderBy : {
+                request_time : 'desc'
+            },
+            include : {
+                logs : {
+                    orderBy : {
+                        scan_time : 'desc'
+                    },
+                    take : 1
+                }
+            }
+        });
+
+        res.json(passes)
+    } catch (error) {
+        res.status(500).json({
+            error : error.message
+        })
+    }
     const passes = await prisma.leavePass.findMany({ where: { college_id: req.user.id } });
     res.json(passes);
 });
@@ -120,5 +145,60 @@ router.put('/status/:pass_id', getCurrentUser, requireRole(['warden']), validate
         res.status(500).json({ error: err.message });
     }
 });
+
+router.post('/convert', getCurrentUser, requireRole(['student']), async(req, res) => {
+    const {leave_end} = req.body;
+
+    if(!leave_end){
+        return res.status(400).json({
+            detail : "A new leave_end date is required to convert to a leave pass."
+        })
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    try{
+        const recentPass = await prisma.leavePass.findFirst({
+            where : {
+                college_id : req.user.id
+            },
+            orderBy : {
+                request_time : 'desc'
+            }
+        });
+
+        if(!recentPass || recentPass.pass_type.toLowerCase() !== 'market'){
+            return res.status(400).json({
+                detail : "Action denied. Your most rescent pass is not a market pass."
+            })
+        }
+
+        const updatedPass = await prisma.leavePass.update({
+            where : {
+                pass_id : recentPass.pass_id
+            },
+            data : {
+                pass_type : 'leave',
+                leave_end : new Date(leave_end),
+                pass_status : 'pending'
+            }
+        });
+
+        await sendParentNotification(
+            req.parent_email,
+            req.first_name,
+            'leave (extended from a market pass)'
+        );
+
+        res.status(200).json({
+            detail : "Market pass successfully converted to a Leave pass and is pending warden approval."
+        })
+    }catch(error){
+        res.status(500).json({
+            error : error.message
+        })
+    }
+})
 
 module.exports = router;

@@ -13,6 +13,34 @@ const ViewPass = () => {
 
   const now = new Date().toISOString().split('T')[0]
 
+  const [showConvertModal, setShowConvertModal] = useState(false);
+  const [newEndDate, setNewEndDate] = useState('');
+  const [isConverting, setIsConverting] = useState(false);
+
+  const handleConvertPass = async () =>{
+    if(!newEndDate){
+      alert("Please select a return date");
+      return;
+    }
+
+    setIsConverting(true);
+    try{
+      await passAPI.convertPass(newEndDate);
+
+      setShowConvertModal(false);
+      setNewEndDate('');
+
+      fetchPasses();
+
+      alert("Pass successfully extended and sent to the warden for approval");
+    }catch(error){
+      console.error("Failed  to convert pass: ", error);
+      alert(error.response?.data?.detail || "Failed to extend pass");
+    }finally{
+      setIsConverting(false);
+    }
+  }
+
   useEffect(() => {
     fetchPasses();
   }, []);
@@ -169,6 +197,7 @@ const ViewPass = () => {
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Name</th>
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Pass Type</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Status</th>
+                    <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -176,6 +205,10 @@ const ViewPass = () => {
                     
                     passes.map((pass, idx) => {
                       const given = new Date(pass.leave_start).toISOString().split('T')[0]
+
+                      const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
+                      const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn
+
                       if(given === now){
                         return <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
                           <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
@@ -188,9 +221,19 @@ const ViewPass = () => {
                           <td className="px-6 py-4 text-right">
                             <StatusBadge status={pass.pass_status} />
                           </td>
+                          <td className="px-6 py-4 text-right">
+                            {idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && (
+                              <button
+                                onClick={() => setShowConvertModal(true)}
+                                className="px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg hover:bg-indigo-200 transition whitespace-nowrap"
+                              >
+                                Extend to Leave
+                              </button>
+                            )}
+                          </td>
                         </tr>  
                       }
-                      
+                      return null;
                     })
                   }
                 </tbody>
@@ -199,6 +242,59 @@ const ViewPass = () => {
           )}
         </div>
       </main>
+      {showConvertModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Extend to Leave Pass</h3>
+            <p className="text-sm text-slate-500 mb-6">
+              This will change your current market pass into a Leave Pass and require the warden's approval. 
+            </p>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                New Return Date
+              </label>
+              <input 
+                type="date" 
+                value={newEndDate}
+                onChange={(e) => setNewEndDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]} // Prevents picking past dates
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => {
+                  setShowConvertModal(false);
+                  setNewEndDate(''); // Reset date on cancel
+                }}
+                disabled={isConverting}
+                className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConvertPass}
+                disabled={isConverting}
+                className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2 transition"
+              >
+                {isConverting ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    Extending...
+                  </>
+                ) : (
+                  'Submit Extension'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

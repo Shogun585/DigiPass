@@ -55,6 +55,7 @@ export const authAPI = {
 export const passAPI = {
   createPass: (passData) => {
       const now = new Date();
+      now.setHours(0,0,0,0)
       const today = now.toISOString().split('T')[0];
 
       console.log(`today's date : ${today}`)
@@ -78,8 +79,13 @@ export const passAPI = {
     getMyPasses: () => api.get('/pass/my_pass'),  
     getPendingPasses: () => api.get('/pass/pending'),
     getAllPasses: () => api.get('/pass/all'),
-    updatePassStatus: (passId, status) => 
+    updatePassStatus: (passId, status) => {
       api.put(`/pass/status/${passId}`, { pass_status: status.toLowerCase() }) 
+    },
+    convertPass : (leaveEndDate) => {
+      return api.post('/pass/convert', {leave_end : leaveEndDate})
+    }
+      
   };
 
 // Verification API
