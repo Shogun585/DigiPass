@@ -17,6 +17,13 @@ const ViewPass = () => {
   const [newEndDate, setNewEndDate] = useState('');
   const [isConverting, setIsConverting] = useState(false);
 
+  const [showExtendModal, setShowExtendModal] = useState(false);
+  const [extendDate, setExtendDate] = useState('');
+  const [isExtending, setIsExtending] = useState(false);
+  const [extendPassId, setExtendPassId] = useState(null);
+
+  const [extendError, setExtendError] = useState('');
+
   const handleConvertPass = async () =>{
     if(!newEndDate){
       alert("Please select a return date");
@@ -38,6 +45,33 @@ const ViewPass = () => {
       alert(error.response?.data?.detail || "Failed to extend pass");
     }finally{
       setIsConverting(false);
+    }
+  }
+
+  const handleExtendPass = async () =>{
+    setExtendError('');
+
+    if(!extendDate){
+      alert("Please select a new return date");
+      return;
+    }
+
+    setIsExtending(true);
+    try {
+      await passAPI.extendPass(extendPassId, extendDate);
+
+      setShowExtendModal(false);
+      setExtendDate('');
+      setExtendPassId(null);
+
+      fetchPasses();
+
+      // alert("Leave pass successfully extended and sent to the warden for approval");
+    } catch (error) {
+      console.error("Failed to extend pass: ", error);
+      setExtendError(error.response?.data?.detail || "Failed to extend pass");
+    } finally {
+      setIsExtending(false);
     }
   }
 
@@ -92,6 +126,16 @@ const ViewPass = () => {
     },
     { approved: 0, rejected: 0, pending: 0 }
   );
+
+  const selectedPass = passes.find(p => p.pass_id === extendPassId);
+  let minExtensionDate = new Date().toISOString().split('T')[0]; 
+
+  if (selectedPass) {
+      const currentEnd = new Date(selectedPass.leave_end);
+   
+      currentEnd.setDate(currentEnd.getDate() + 1); 
+      minExtensionDate = currentEnd.toISOString().split('T')[0];
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
@@ -206,8 +250,12 @@ const ViewPass = () => {
                     passes.map((pass, idx) => {
                       const given = new Date(pass.leave_start).toISOString().split('T')[0]
 
+                      const passEndDate = new Date(pass.leave_end).toISOString().split('T')[0]
+
                       const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
                       const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn
+
+                      const isEligibleForExtend = pass.pass_type === 'leave' && (pass.pass_status === 'approved' || pass.pass_status === 'pending') && passEndDate >= now && !isCheckedIn;
 
                       if(given === now){
                         return <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
@@ -221,13 +269,25 @@ const ViewPass = () => {
                           <td className="px-6 py-4 text-right">
                             <StatusBadge status={pass.pass_status} />
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            {idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && (
+                          <td className="px-6 py-4 text-right flex justify-end gap-2">
+                            {isEligibleForExtension && (
                               <button
                                 onClick={() => setShowConvertModal(true)}
                                 className="px-3 py-1.5 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg hover:bg-indigo-200 transition whitespace-nowrap"
                               >
                                 Extend to Leave
+                              </button>
+                            )}
+                            
+                            {isEligibleForExtend && (
+                              <button
+                                onClick={() => {
+                                  setExtendPassId(pass.pass_id);
+                                  setShowExtendModal(true);
+                                }}
+                                className="px-3 py-1.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg hover:bg-purple-200 transition whitespace-nowrap"
+                              >
+                                Extend Date
                               </button>
                             )}
                           </td>
@@ -258,7 +318,7 @@ const ViewPass = () => {
                 type="date" 
                 value={newEndDate}
                 onChange={(e) => setNewEndDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]} // Prevents picking past dates
+                min={new Date().toISOString().split('T')[0]} 
                 className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -267,7 +327,7 @@ const ViewPass = () => {
               <button 
                 onClick={() => {
                   setShowConvertModal(false);
-                  setNewEndDate(''); // Reset date on cancel
+                  setNewEndDate(''); 
                 }}
                 disabled={isConverting}
                 className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
@@ -280,6 +340,73 @@ const ViewPass = () => {
                 className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2 transition"
               >
                 {isConverting ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    Extending...
+                  </>
+                ) : (
+                  'Submit Extension'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showExtendModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Extend Leave Pass</h3>
+            <p className="text-sm text-slate-500 mb-6">
+              Select a new return date. This will set your pass back to "Pending" until the warden approves the extension.
+            </p>
+
+            {extendError && (
+              <div className="mb-4 p-3 rounded-lg bg-rose-50 text-rose-700 text-sm font-medium border border-rose-200 flex items-start gap-2">
+                <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>{extendError}</span>
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                New Return Date
+              </label>
+              <input 
+                type="date" 
+                value={extendDate}
+                onChange={(e) => {
+                  setExtendDate(e.target.value)
+                  setExtendError('')
+                }}
+                min={minExtensionDate} 
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => {
+                  setShowExtendModal(false);
+                  setExtendDate(''); 
+                  setExtendPassId(null);
+                  setExtendError('');
+                }}
+                disabled={isExtending}
+                className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleExtendPass}
+                disabled={isExtending}
+                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2 transition"
+              >
+                {isExtending ? (
                   <>
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
