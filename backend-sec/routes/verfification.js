@@ -16,6 +16,7 @@ const verifyPassLogic = async (collegeId) => {
 
     const { password, ...userWithoutPassword } = user;
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const validPass = await prisma.leavePass.findFirst({
         where: {
@@ -26,6 +27,14 @@ const verifyPassLogic = async (collegeId) => {
         },
         orderBy : {
             request_time : 'desc'
+        },
+        include : {
+            logs : {
+                orderBy : {
+                    scan_time : 'desc'
+                },
+                take : 1
+            }
         }
     });
 
@@ -35,6 +44,17 @@ const verifyPassLogic = async (collegeId) => {
             message: `No valid approved pass found for ${user.first_name} ${user.last_name}`,
             pass_details: null,
             user_details: userWithoutPassword
+        };
+    }
+
+    const isCheckedIn = validPass.logs.length > 0 && validPass.logs[0].student_status === 'in';
+
+    if(isCheckedIn){
+        return { 
+            valid: false, 
+            message: "This pass has already been used and checked back in. Waiting for new passes to be approved.", 
+            pass_details: null, 
+            user_details: userWithoutPassword 
         };
     }
 
@@ -59,6 +79,21 @@ router.post('/checkout/:pass_id', getCurrentUser, requireRole(['guard']), async(
         if(!pass){
             return res.status(404).json({
                 detail : "Pass not found"
+            })
+        }
+
+        const latestLog = await prisma.log.findFirst({
+            where : {
+                pass_id : passId,
+            },
+            orderBy : {
+                scan_time : 'desc'
+            }
+        })
+
+        if(latestLog && latestLog.student_status === 'out'){
+            return res.status(400).json({
+                detail : "Action detected: Student is already checked out."
             })
         }
 
@@ -94,6 +129,21 @@ router.post('/checkin/:pass_id', getCurrentUser, requireRole(['guard']), async(r
 
         if (!pass){
             return res.status(404).json({ detail: "Pass not found" });
+        }
+
+        const latestLog = await prisma.log.findFirst({
+            where : {
+                pass_id : passId
+            },
+            orderBy : {
+                scan_time : 'desc'
+            }
+        })
+
+        if(!latestLog || latestLog.student_status === 'in'){
+            return res.status(400).json({
+                detail : "Action denied. Student is already checked in or didn't check out."
+            })
         }
 
         const newLog = await prisma.log.create({
