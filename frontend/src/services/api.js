@@ -84,6 +84,9 @@ export const passAPI = {
     },
     convertPass : (leaveEndDate) => {
       return api.post('/pass/convert', {leave_end : leaveEndDate})
+    },
+    extendPass : (passId, newDate) => {
+      api.post(`/pass/extend/${passId}`, {new_leave_end : newDate})
     }
       
   };
