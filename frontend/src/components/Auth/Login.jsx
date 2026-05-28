@@ -31,7 +31,7 @@ const Login = () => {
     setLoading(false);
   };
 
-  return (
+  return ( 
     <div className="min-h-screen flex bg-slate-50">
       {/* Brand panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
@@ -82,7 +82,7 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="text-xs text-white/50">© {new Date().getFullYear()} IMSEC Hostel Portal</div>
+          <div className="text-xs text-white/50">© {new Date().getFullYear()} DigiPass</div>
         </div>
       </div>
 
@@ -118,7 +118,7 @@ const Login = () => {
                 <input
                   id="username"
                   type="text"
-                  placeholder="e.g. AXXXXXX1234"
+                  placeholder="Email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
