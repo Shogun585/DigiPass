@@ -124,8 +124,6 @@ router.get('/my_pass', getCurrentUser, requireRole(['student']), async (req, res
             error : error.message
         })
     }
-    const passes = await prisma.leavePass.findMany({ where: { college_id: req.user.id } });
-    res.json(passes);
 });
 
 router.put('/status/:pass_id', getCurrentUser, requireRole(['warden']), validate(schemas.passEvaluation), async (req, res) => {
@@ -195,6 +193,97 @@ router.post('/convert', getCurrentUser, requireRole(['student']), async(req, res
             detail : "Market pass successfully converted to a Leave pass and is pending warden approval."
         })
     }catch(error){
+        res.status(500).json({
+            error : error.message
+        })
+    }
+})
+
+router.post('/extend/:pass_id', getCurrentUser, requireRole(['student']), async(req, res)=>{
+    const passId = parseInt(req.params.pass_id);
+
+    const {new_leave_end} = req.body;
+
+    if(!new_leave_end){
+        return res.status(400).json({
+            detail : "A new return date is required."
+        })
+    }        
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const requestedEndDate = new Date(new_leave_end);
+
+    try {
+        const passToExtend = await prisma.leavePass.findUnique({
+            where : {
+                pass_id : passId
+            },
+            include : {
+                logs : {
+                    orderBy : {
+                        scan_time : 'desc'
+                    },
+                    take : 1
+                }
+            }
+        });
+
+        if(!passToExtend || passToExtend.college_id !== req.user.id || passToExtend.pass_type !== 'leave'){
+            return res.status(403).json({
+                detail : "Action denied. Invalid pass."
+            })
+        }
+
+        if(passToExtend.pass_status !== 'approved' && passToExtend.pass_status !== 'pending'){
+            return res.status(400).json({
+                detail : "Only approved or pending passes can be extended."
+            })
+        }
+
+        if(passToExtend.leave_end <= today){
+            return res.status(400).json({
+                detail : "This pass has already expired. You must apply for a new pass instead of extending it."
+            })
+        }
+
+        if(requestedEndDate <= passToExtend.leave_end){
+            return res.status(400).json({
+                detail : "Extension can only be made for future date. If returning early, simply scan your ID at the gate."
+            })
+        }
+
+        const isCheckedIn = passToExtend.logs.length > 0 && passToExtend.logs[0].student_status === 'in';
+        if(isCheckedIn){
+            return res.status(400).json({
+                detail : "Cannot extend a pass after you have already checked back into the hostel."
+            })
+        }
+
+        const updatedPass = await prisma.leavePass.update({
+            where : {
+                pass_id : passId
+            },
+            data : {
+                leave_end : requestedEndDate,
+                pass_status : 'pending',
+                is_extension : true
+            }
+        })
+
+        // await sendParentNotification(
+        //     req.user.parent_email,
+        //     req.user.first_name,
+        //     `leave (Extended until ${requestedEndDate.toISOString().split('T')[0]})`
+        // )
+
+        res.status(200).json({
+            detail : "Leave pass successfully extended and is pending warden approval.",
+            pass : updatedPass
+        })
+
+    } catch (error) {
+        console.error(error)
         res.status(500).json({
             error : error.message
         })
