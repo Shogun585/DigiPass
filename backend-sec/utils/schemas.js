@@ -20,7 +20,8 @@ const schemas = {
         leave_end: z.string().transform(str => new Date(str))
     }),
     passEvaluation: z.object({
-        pass_status: z.enum(['pending', 'approved', 'rejected'])
+        pass_status: z.enum(['pending', 'approved', 'rejected']),
+        remark : z.string().nullable().optional()
     })
 };
 
