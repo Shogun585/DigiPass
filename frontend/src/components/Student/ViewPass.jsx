@@ -240,6 +240,7 @@ const ViewPass = () => {
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Admission No.</th>
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Name</th>
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Pass Type</th>
+                    <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Remarks</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Status</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Actions</th>
                   </tr>
@@ -265,6 +266,9 @@ const ViewPass = () => {
                             <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium capitalize ring-1 ring-indigo-100">
                               {pass.pass_type}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate" title={pass.remark}>
+                            {pass.remark || '-'}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <StatusBadge status={pass.pass_status} />
