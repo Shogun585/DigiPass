@@ -290,4 +290,65 @@ router.post('/extend/:pass_id', getCurrentUser, requireRole(['student']), async(
     }
 })
 
+router.get('/late-returns', getCurrentUser, requireRole(['warden', 'admin']), async(req, res)=>{
+    try{
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const passes = await prisma.leavePass.findMany({
+            where : {
+                pass_type : 'market',
+                leave_start : {
+                    gte : today
+                },
+                logs : {
+                    some : {
+                        action : 'checked_in'
+                    }
+                }
+            },
+            include : {
+                logs : {
+                    orderBy : {
+                         scan_time : 'desc'
+                    },
+                    take : 1
+                },
+                user : {
+                    select : {
+                        first_name : true,
+                        last_name : true,
+                    }
+                }
+                
+            }
+        });
+
+        const latestPasses = passes.filter(pass => {
+            if(!pass.logs || pass.logs.length === 0){
+                return false;
+            }
+
+            const checkInTime = new Date(pass.logs[0].scan_time);
+
+            const options = {
+                timeZone = 'Asia/Kolkata',
+                hour : 'numeric',
+                hour12 : false
+            };
+
+            const isHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(checkInTime));
+
+            return isHour >= 21; // 9 PM
+        })
+
+        res.json(latestPasses)
+        
+    }catch(error){
+        res.status(500).json({
+            error : error.message
+        })
+    }
+})
+
 module.exports = router;
