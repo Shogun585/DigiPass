@@ -1,6 +1,6 @@
 // src/context/PassContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { passAPI } from "../services/api";
+import api, { passAPI } from "../services/api";
 
 const PassContext = createContext();
 
@@ -86,6 +86,16 @@ export const PassProvider = ({ children }) => {
     }
   };
 
+  const getLateReturns = async () =>{
+    try {
+      const response = await passAPI.getLateReturns();
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
   return (
     <PassContext.Provider value={{ 
       passes, 
@@ -94,7 +104,8 @@ export const PassProvider = ({ children }) => {
       updatePassStatus,
       getMyPasses,
       getPendingPasses,
-      fetchAllPasses
+      fetchAllPasses,
+      getLateReturns
     }}>
       {children}
     </PassContext.Provider>
