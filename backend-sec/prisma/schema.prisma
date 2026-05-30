@@ -81,6 +81,8 @@ model LeavePass {
 
   is_extension Boolean @default(false)
 
+  remark String? @db.Text
+
   // Relationships
   college      User       @relation(fields: [college_id], references: [id])
   logs         Log[]      // One-to-many relation to Logs
