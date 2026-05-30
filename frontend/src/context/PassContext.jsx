@@ -42,10 +42,10 @@ export const PassProvider = ({ children }) => {
   };
 
   // Update pass status via API
-  const updatePassStatus = async (passId, newStatus) => {
+  const updatePassStatus = async (passId, newStatus, remark) => {
     try {
       setLoading(true);
-      const response = await passAPI.updatePassStatus(passId, newStatus);
+      const response = await passAPI.updatePassStatus(passId, newStatus, remark);
       setPasses(prev => prev.map(pass => 
         pass.pass_id === passId ? response.data : pass
       ));
@@ -96,6 +96,22 @@ export const PassProvider = ({ children }) => {
     }
   }
 
+  const addPassRemark = async (passId, remark) => {
+      try {
+        setLoading(true);
+        const response = await passAPI.addPassRemark(passId, remark);
+
+        setPasses(prev => prev.map(pass => pass.pass_id === passId ? { ...pass, remark : response.data.pass.remark} : pass));
+
+        return { success : true, pass : response.data}
+      } catch (error) {
+        console.error("Error adding remark:", error);
+        return { success: false, error: error.response?.data?.detail };
+      }finally{
+        setLoading(false);
+      }
+  }
+
   return (
     <PassContext.Provider value={{ 
       passes, 
@@ -105,7 +121,8 @@ export const PassProvider = ({ children }) => {
       getMyPasses,
       getPendingPasses,
       fetchAllPasses,
-      getLateReturns
+      getLateReturns,
+      addPassRemark
     }}>
       {children}
     </PassContext.Provider>
