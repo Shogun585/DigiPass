@@ -7,11 +7,14 @@ const ApprovalPage = () => {
   const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pendingPasses, setPendingPasses] = useState([]);
-  const { updatePassStatus, getPendingPasses, getLateReturns } = usePass();
+  const { updatePassStatus, getPendingPasses, getLateReturns, addPassRemark } = usePass();
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState('pending');
   const [latePasses, setLatePasses] = useState([]);
+
+  const [remarks, setRemarks] = useState({});
+  const [attendance, setAttendance] = useState(85);
 
   useEffect(() => {
     if(viewMode === 'pending'){
@@ -21,6 +24,11 @@ const ApprovalPage = () => {
       loadLatePasses();
     }
   }, [viewMode]);
+
+  const fetchStudentAttendance = () => {
+    return 85;
+    // TODO : add API to fetch attendance from ERP
+  }
 
   const loadPendingPasses = async () => {
     setLoading(true);
@@ -36,8 +44,21 @@ const ApprovalPage = () => {
     setLoading(false);
   };
 
+  const initializeRemarks = (passList) => {
+    const initialRemarks = {};
+    passList.forEach(p => {
+      if(p.remark) initialRemarks[p.pass_id] = p.remark;
+    });
+    setRemarks(initialRemarks);
+  }
+
+  const handleRemarkChange = (passId, value) => {
+    setRemarks(prev => ({ ...prev, [passId]: value }));
+  };
+
   const handleApprove = async (passId) => {
-    const result = await updatePassStatus(passId, 'approved');
+    const passRemark = remarks[passId] || '';
+    const result = await updatePassStatus(passId, 'approved', passRemark);
     if (result.success) {
       alert('Pass approved!');
       await loadPendingPasses();
@@ -45,10 +66,21 @@ const ApprovalPage = () => {
   };
 
   const handleReject = async (passId) => {
-    const result = await updatePassStatus(passId, 'rejected');
+    const passRemark = remarks[passId] || '';
+    const result = await updatePassStatus(passId, 'rejected', passRemark);
     if (result.success) {
       alert('Pass rejected!');
       await loadPendingPasses();
+    }
+  };
+
+  const handleSaveLateRemark = async (passId) => {
+    const passRemark = remarks[passId] || '';
+    try {
+      await addPassRemark(passId, passRemark);
+      alert('Remark saved successfully!');
+    } catch (err) {
+      alert('Failed to save remark.');
     }
   };
 
@@ -214,9 +246,25 @@ const ApprovalPage = () => {
                             {pass.pass_type}
                           </span>
                         </td>
+                        <td className="px-4 py-4 text-center">
+                          <span className={`font-semibold ${attendance < 75 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                            {attendance}%
+                          </span>
+                        </td>
+
                         {viewMode === 'pending' && (
                           <>
                             <td className="px-6 py-4 text-slate-700">{pass.leave_start.split('T')[0]}</td>
+                            <td className="px-4 py-4">
+                              <input 
+                                type="text"
+                                placeholder="Add remark..."
+                                value={remarks[pass.pass_id] || ''}
+                                onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
+                                disabled={isActed}
+                                className="w-full text-xs px-3 py-1.5 rounded border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-400"
+                              />
+                            </td>
                             <td className="px-6 py-4">
                               {isActed ? (
                                 <div className="flex justify-end">
@@ -248,6 +296,23 @@ const ApprovalPage = () => {
                           <>
                             <td className="px-6 py-4 font-semibold text-rose-600">
                               {pass.logs && pass.logs.length > 0 ? formatISTTime(pass.logs[0].scan_time) : 'N/A'}
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex gap-2">
+                                <input 
+                                  type="text"
+                                  placeholder="Disciplinary note..."
+                                  value={remarks[pass.pass_id] || ''}
+                                  onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
+                                  className="w-full text-xs px-3 py-1.5 rounded border border-slate-200 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                                />
+                                <button
+                                  onClick={() => handleSaveLateRemark(pass.pass_id)}
+                                  className="px-2.5 py-1.5 bg-slate-100 text-slate-700 text-xs font-medium rounded hover:bg-slate-200 transition"
+                                >
+                                  Save
+                                </button>
+                              </div>
                             </td>
                             <td className="px-6 py-4 text-right">
                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-200 border border-rose-300">
