@@ -9,7 +9,13 @@ const app = express()
 const PORT = 8000
 
 app.use(express.json())
-app.use(cors())
+
+app.use(cors({
+    origin : [
+        'http://localhost:3000',
+    ],
+    credentials : true
+}))
 
 app.use('/login', loginRouter)
 app.use('/user', userRouter)
@@ -23,6 +29,6 @@ app.get('/', (req, res)=>{
     }).status(200)
 })
 
-app.listen(PORT, ()=>{
+app.listen(PORT, '0.0.0.0',  ()=>{
     console.log(`App is listening on port ${PORT}`)
 })
