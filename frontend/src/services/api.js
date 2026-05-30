@@ -87,7 +87,8 @@ export const passAPI = {
     },
     extendPass : (passId, newDate) => {
       api.post(`/pass/extend/${passId}`, {new_leave_end : newDate})
-    }
+    },
+    getLateReturns : () => api.get('/pass/late-returns')
       
   };
 
