@@ -128,6 +128,8 @@ router.get('/my_pass', getCurrentUser, requireRole(['student']), async (req, res
 
 router.put('/status/:pass_id', getCurrentUser, requireRole(['warden']), validate(schemas.passEvaluation), async (req, res) => {
     const passId = parseInt(req.params.pass_id);
+
+    const {pass_status, remark} = req.body;
     
     try {
         const pass = await prisma.leavePass.findUnique({ where: { pass_id: passId } });
@@ -135,7 +137,10 @@ router.put('/status/:pass_id', getCurrentUser, requireRole(['warden']), validate
 
         const updatedPass = await prisma.leavePass.update({
             where: { pass_id: passId },
-            data: { pass_status: req.body.pass_status }
+            data: { 
+                pass_status: req.body.pass_status,
+                remark : remark || null
+            }
         });
 
         res.json(updatedPass);
@@ -332,7 +337,7 @@ router.get('/late-returns', getCurrentUser, requireRole(['warden', 'admin']), as
             const checkInTime = new Date(pass.logs[0].scan_time);
 
             const options = {
-                timeZone = 'Asia/Kolkata',
+                timeZone : 'Asia/Kolkata',
                 hour : 'numeric',
                 hour12 : false
             };
@@ -347,6 +352,31 @@ router.get('/late-returns', getCurrentUser, requireRole(['warden', 'admin']), as
     }catch(error){
         res.status(500).json({
             error : error.message
+        })
+    }
+})
+
+router.put('/remark/:pass_id', getCurrentUser, requireRole(['admin', 'warden']), async (req, res) => {
+    
+    const {remark} = req.body;
+
+    try{
+        const updatedPass = await prisma.leavePass.update({
+            where : {
+                pass_id : parseInt(req.params.pass_id)
+            },
+            data : {
+                remark : remark
+            }
+        });
+
+        res.json({
+            success : true,
+            pass : updatedPass
+        })
+    }catch{
+        res.status(500).json({
+            detail : error.message
         })
     }
 })
