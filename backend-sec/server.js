@@ -1,5 +1,6 @@
 const express = require("express")
 const cors = require("cors")
+const adminRouter = require("./routes/admin.js")
 const loginRouter = require("./routes/login.js")
 const userRouter = require("./routes/user.js")
 const passesRouter = require("./routes/passes.js")
@@ -17,6 +18,7 @@ app.use(cors({
     credentials : true
 }))
 
+app.use('/admin', adminRouter)
 app.use('/login', loginRouter)
 app.use('/user', userRouter)
 app.use('/pass', passesRouter)
