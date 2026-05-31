@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { usePass } from '../../context/PassContext';
 
+const getLocalYYYYMMDD = (dateInput) => {
+  const d = dateInput ? new Date(dateInput) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const ApplyPass = () => {
   const userDetails = JSON.parse(localStorage.getItem('user'));
 
@@ -25,7 +33,7 @@ const ApplyPass = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalYYYYMMDD();
     setLeaveStartDate(today);
   }, []);
 
@@ -57,7 +65,7 @@ const ApplyPass = () => {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalYYYYMMDD();
 
     const result = await addPass({
       name: formData.name,
@@ -178,16 +186,32 @@ const ApplyPass = () => {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Course</label>
-                <input
-                  type="text"
-                  name="course"
-                  value={formData.course}
-                  onChange={handleChange}
-                  placeholder="e.g., B.Tech CSE"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
-                />
-                {errors.course && <p className="mt-1 text-xs text-red-600">{errors.course}</p>}
+                <label className="block text-sm font-medium text-slate-700 mb-2">Course</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {['B.Tech CSE', 'B.Tech IT', 'B.Tech ECE', 'B.Tech ME', 'MBA', 'MCA'].map((courseName) => (
+                    <label 
+                      key={courseName}
+                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${
+                        formData.course === courseName
+                          ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600'
+                          : 'border-slate-200 hover:border-indigo-300 bg-white'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="course"
+                        value={courseName}
+                        checked={formData.course === courseName}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-500 bg-white"
+                      />
+                      <span className="ml-3 text-sm font-medium text-slate-900">
+                        {courseName}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {errors.course && <p className="mt-2 text-xs text-red-600">{errors.course}</p>}
               </div>
             </div>
 
