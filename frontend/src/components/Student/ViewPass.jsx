@@ -11,8 +11,6 @@ const ViewPass = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const now = new Date().toISOString().split('T')[0]
-
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [newEndDate, setNewEndDate] = useState('');
   const [isConverting, setIsConverting] = useState(false);
@@ -23,6 +21,16 @@ const ViewPass = () => {
   const [extendPassId, setExtendPassId] = useState(null);
 
   const [extendError, setExtendError] = useState('');
+
+  const getLocalYYYYMMDD = (dateInput) => {
+    const d = dateInput ? new Date(dateInput) : new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const now = getLocalYYYYMMDD()
 
   const handleConvertPass = async () =>{
     if(!newEndDate){
@@ -128,13 +136,13 @@ const ViewPass = () => {
   );
 
   const selectedPass = passes.find(p => p.pass_id === extendPassId);
-  let minExtensionDate = new Date().toISOString().split('T')[0]; 
+  let minExtensionDate = getLocalYYYYMMDD(); 
 
   if (selectedPass) {
       const currentEnd = new Date(selectedPass.leave_end);
    
       currentEnd.setDate(currentEnd.getDate() + 1); 
-      minExtensionDate = currentEnd.toISOString().split('T')[0];
+      minExtensionDate = getLocalYYYYMMDD(currentEnd);
   }
 
   return (
@@ -237,9 +245,11 @@ const ViewPass = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Admission No.</th>
-                    <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Name</th>
+                    {/* <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Admission No.</th>
+                    <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Name</th> */}
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Pass Type</th>
+                    <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Leave start</th>
+                    <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Leave end</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Remarks</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Status</th>
                     <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Actions</th>
@@ -249,9 +259,8 @@ const ViewPass = () => {
                   {
                     
                     passes.map((pass, idx) => {
-                      const given = new Date(pass.leave_start).toISOString().split('T')[0]
-
-                      const passEndDate = new Date(pass.leave_end).toISOString().split('T')[0]
+                      const given = getLocalYYYYMMDD(pass.leave_start);
+                      const passEndDate = getLocalYYYYMMDD(pass.leave_end);
 
                       const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
                       const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn
@@ -260,12 +269,16 @@ const ViewPass = () => {
 
                       if(given === now){
                         return <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition">
-                          <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
-                          <td className="px-6 py-4 text-slate-700">{user?.first_name} {user?.last_name}</td>
+                          {/* <td className="px-6 py-4 font-medium text-slate-900">{pass.college_id || user?.id}</td>
+                          <td className="px-6 py-4 text-slate-700">{user?.first_name} {user?.last_name}</td> */}
                           <td className="px-6 py-4">
                             <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium capitalize ring-1 ring-indigo-100">
                               {pass.pass_type}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-700">{given}</td>
+                          <td className="px-6 py-4 text-slate-700">
+                            {given === passEndDate ? "" : passEndDate}
                           </td>
                           <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate" title={pass.remark}>
                             {pass.remark || '-'}
