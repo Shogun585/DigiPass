@@ -116,7 +116,8 @@ touch .env
 ```
 Configure your environment file (.env):
 ```
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # connection pooling database url
+DIRECT_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # simple database connectivity url
 JWT_SECRET="your_super_secret_key"
 ```
 Generate the client instances and map schemas into your active database engine:
