@@ -312,27 +312,36 @@ const VerificationPage = () => {
                           <div className={`p-3 rounded-lg text-sm font-medium ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
                             {actionMessage.text}
                           </div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-3">
-                            <button
-                              onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
-                              disabled={actionLoading}
-                              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                              Check OUT
-                            </button>
-                            
-                            <button
-                              onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
-                              disabled={actionLoading}
-                              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                              Check IN
-                            </button>
-                          </div>
-                        )}
+                        ) : ( () => {
+                          const logs = verificationResult.pass_details.logs || [];
+                          const isCheckedOut = logs.length > 0 && logs[0].student_status === 'out';
+
+                          return (
+                            <div className="flex flex-col gap-3">
+                              {!isCheckedOut ? (
+                                <button
+                                  onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
+                                  disabled={actionLoading}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                                  Check OUT Student
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
+                                  disabled={actionLoading}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                                  Check IN Student
+                                </button>
+                              )}
+                            </div>
+                          );
+                        }
+                          
+                        )()}
                         
                         {actionLoading && (
                           <p className="text-xs text-center text-slate-500 mt-3 animate-pulse">Processing action...</p>
