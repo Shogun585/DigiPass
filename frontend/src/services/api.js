@@ -109,4 +109,17 @@ export const verifyAPI = {
   checkIn : (passId) => api.post(`/verify/checkin/${passId}`)
 };
 
+export const adminAPI = {
+  createUser : (userData) => api.post('/admin/users', userData),
+  bulkUploadUsers : (formData) => api.post('/admin/users/bulk', formData, {
+    headers : {
+      'Content-Type' : 'multipart/form-data'
+    }
+  }),
+  deactivateUser : (userId) => api.delete(`/admin/users/${userId}`),
+  resetPassword : (userId, newPassword) => api.put(`/admin/users/${userId}/password`, {
+    new_password : newPassword
+  })
+}
+
 export default api;
