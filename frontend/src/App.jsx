@@ -9,6 +9,7 @@ import VerificationPage from './components/Security/VerificationPage';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import './App.css';
 import { PassProvider } from './context/PassContext';
+import AdminDashboard from './components/Admin/AdminDashboard';
 
 function App() {
   return (
@@ -17,6 +18,17 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
+
+          {/* Admin Route */}
+          <Route 
+            path='/admin'
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           
           {/* Student Routes */}
           <Route

@@ -23,6 +23,7 @@ const Login = () => {
       if (role === 'student') navigate('/apply-pass');
       else if (role === 'warden') navigate('/warden-approval');
       else if (role === 'guard') navigate('/verification');
+      else if(role === 'admin') navigate('/admin')
       else navigate('/');
     } else {
       setError(result.error);
