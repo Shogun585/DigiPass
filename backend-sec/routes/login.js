@@ -18,6 +18,12 @@ router.post('/', async (req, res) => {
         return res.status(404).json({ detail: "Incorrect credentials" });
     }
 
+    if(user.is_active === false){
+        return res.status(403).json({
+            error : "This account has been deactivated by admininstrator."
+        })
+    }
+
     const accessToken = createAccessToken({ sub: user.id });
     
     // Omit password from response
