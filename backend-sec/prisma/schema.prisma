@@ -62,6 +62,8 @@ model User {
   contact_details String?     @db.VarChar(50)
   parent_email    String?     @db.VarChar(100) // Added for notifications
   
+  is_active Boolean @default(true)
+
   // Relationships
   leave_passes    LeavePass[]
   logs            Log[]       // One-to-many relation to Logs (as staff)
