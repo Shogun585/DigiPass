@@ -23,7 +23,7 @@ const ApprovalPage = () => {
     if(viewMode === 'late'){
       loadLatePasses();
     }
-  }, []);
+  }, [loadLatePasses]);
 
   // const fetchStudentAttendance = () => {
   //   return 85;
