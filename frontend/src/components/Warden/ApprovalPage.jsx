@@ -16,20 +16,6 @@ const ApprovalPage = () => {
   const [remarks, setRemarks] = useState({});
   const [attendance] = useState(85);
 
-  useEffect(() => {
-    if(viewMode === 'pending'){
-      loadPendingPasses()
-    }
-    if(viewMode === 'late'){
-      loadLatePasses();
-    }
-  }, [loadLatePasses]);
-
-  // const fetchStudentAttendance = () => {
-  //   return 85;
-  //   // TODO : add API to fetch attendance from ERP
-  // }
-
   const loadPendingPasses = async () => {
     setLoading(true);
     const passes = await getPendingPasses();
@@ -43,6 +29,22 @@ const ApprovalPage = () => {
     setPendingPasses(passes || []);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if(viewMode === 'pending'){
+      loadPendingPasses()
+    }
+    if(viewMode === 'late'){
+      loadLatePasses();
+    }
+  }, [loadLatePasses, loadPendingPasses, viewMode]);
+
+  // const fetchStudentAttendance = () => {
+  //   return 85;
+  //   // TODO : add API to fetch attendance from ERP
+  // }
+
+  
 
   // const initializeRemarks = (passList) => {
   //   const initialRemarks = {};
