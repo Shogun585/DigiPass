@@ -28,7 +28,7 @@ const ApplyPass = () => {
 
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const { addPass } = usePass();
   const navigate = useNavigate();
 
