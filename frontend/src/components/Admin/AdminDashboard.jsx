@@ -233,6 +233,11 @@ const AdminDashboard = () => {
 
             {/* TAB 2: BULK UPLOAD */}
             {activeTab === 'bulk' && (
+                <div className="text-center mb-6">
+                  <h2 className="text-xl font-bold text-red-600">Under construction... 👷🚧</h2>
+                </div>
+            )}
+            {false && (
               <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-6">
                   <h2 className="text-xl font-bold text-slate-900">Bulk Import via CSV</h2>

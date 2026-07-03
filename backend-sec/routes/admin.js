@@ -13,6 +13,10 @@ const upload = multer();
 const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD;
 
 router.post('/users/bulk', getCurrentUser, requireRole(['admin']), upload.single('file'), async(req, res)=>{
+    return res.status(404).json({
+        message : "Under construction..."
+    });
+    
     if(!req.file){
         return res.status(400).json({
             error : "No CSV file uploaded"
