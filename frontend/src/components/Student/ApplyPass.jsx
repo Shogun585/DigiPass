@@ -14,7 +14,7 @@ const getLocalYYYYMMDD = (dateInput) => {
 const ApplyPass = () => {
   const userDetails = JSON.parse(localStorage.getItem('user'));
 
-  const [passType, setPassType] = useState('market');
+  const [setPassType] = useState('market');
   const [showLeaveSection, setShowLeaveSection] = useState(false);
   const [leaveStartDate, setLeaveStartDate] = useState('');
   const [leaveEndDate, setLeaveEndDate] = useState('');

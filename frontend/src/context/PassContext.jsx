@@ -1,6 +1,6 @@
 // src/context/PassContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
-import api, { passAPI } from "../services/api";
+import React, { createContext, useContext, useState} from "react";
+import { passAPI } from "../services/api";
 
 const PassContext = createContext();
 

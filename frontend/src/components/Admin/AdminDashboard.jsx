@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { adminAPI } from '../../services/api';
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 

@@ -11,10 +11,10 @@ const ApprovalPage = () => {
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState('pending');
-  const [latePasses, setLatePasses] = useState([]);
+  const [latePasses] = useState([]);
 
   const [remarks, setRemarks] = useState({});
-  const [attendance, setAttendance] = useState(85);
+  const [attendance] = useState(85);
 
   useEffect(() => {
     if(viewMode === 'pending'){
@@ -23,12 +23,12 @@ const ApprovalPage = () => {
     if(viewMode === 'late'){
       loadLatePasses();
     }
-  }, [viewMode]);
+  }, []);
 
-  const fetchStudentAttendance = () => {
-    return 85;
-    // TODO : add API to fetch attendance from ERP
-  }
+  // const fetchStudentAttendance = () => {
+  //   return 85;
+  //   // TODO : add API to fetch attendance from ERP
+  // }
 
   const loadPendingPasses = async () => {
     setLoading(true);
@@ -44,13 +44,13 @@ const ApprovalPage = () => {
     setLoading(false);
   };
 
-  const initializeRemarks = (passList) => {
-    const initialRemarks = {};
-    passList.forEach(p => {
-      if(p.remark) initialRemarks[p.pass_id] = p.remark;
-    });
-    setRemarks(initialRemarks);
-  }
+  // const initializeRemarks = (passList) => {
+  //   const initialRemarks = {};
+  //   passList.forEach(p => {
+  //     if(p.remark) initialRemarks[p.pass_id] = p.remark;
+  //   });
+  //   setRemarks(initialRemarks);
+  // }
 
   const handleRemarkChange = (passId, value) => {
     setRemarks(prev => ({ ...prev, [passId]: value }));
@@ -89,24 +89,24 @@ const ApprovalPage = () => {
     navigate('/');
   };
 
-  const StatusBadge = ({ status }) => {
-    const s = (status || '').toLowerCase();
-    if (s === 'approved') {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Approved
-        </span>
-      );
-    }
-    if (s === 'rejected') {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-200">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Rejected
-        </span>
-      );
-    }
-    return null;
-  };
+  // const StatusBadge = ({ status }) => {
+  //   const s = (status || '').toLowerCase();
+  //   if (s === 'approved') {
+  //     return (
+  //       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
+  //         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Approved
+  //       </span>
+  //     );
+  //   }
+  //   if (s === 'rejected') {
+  //     return (
+  //       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-200">
+  //         <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Rejected
+  //       </span>
+  //     );
+  //   }
+  //   return null;
+  // };
 
   const pendingCount = pendingPasses.filter(
     (p) => !p.pass_status || !['approved', 'rejected'].includes((p.pass_status || '').toLowerCase())
