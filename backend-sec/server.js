@@ -30,8 +30,7 @@ setInterval(()=>{
 }, 10 * 60 * 1000);
 
 app.use(cors({
-    origin : ORIGIN,
-    credentials : true
+    origin : ORIGIN
 }))
 
 app.use('/admin', adminRouter)
