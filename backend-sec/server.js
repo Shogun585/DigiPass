@@ -8,13 +8,29 @@ const verificationRouter = require("./routes/verfification.js")
 
 const app = express()
 const PORT = process.env.PORT || 8000;
+const BASE_URL = process.env.BASE_URL;
+const ORIGIN = process.env.ORIGIN;
 
-app.use(express.json())
+app.use(express.json());
+
+app.use((req, res, next)=>{
+    res.setHeader('X-Author', 'Abhilash Singh');
+    res.setHeader('X-Project-Name', 'ShelfLife');
+    next();
+});
+
+app.get('/keep-alive', (req, res)=>{
+    res.send("Keep alive!!");
+})
+
+setInterval(()=>{
+    fetch(`${BASE_URL}/keep-alive`)
+        .then(()=>console.log("Pinged self to stay alive."))
+        .catch((err)=>console.error("Ping failed : ", err))
+}, 10 * 60 * 1000);
 
 app.use(cors({
-    origin : [
-        'http://localhost:3000',
-    ],
+    origin : ORIGIN,
     credentials : true
 }))
 
