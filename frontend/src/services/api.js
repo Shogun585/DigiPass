@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
-
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -106,7 +105,8 @@ export const verifyAPI = {
   manualVerify: (collegeId) => api.get(`/verify/manual/${collegeId}`),
 
   checkOut : (passId) => api.post(`/verify/checkout/${passId}`),
-  checkIn : (passId) => api.post(`/verify/checkin/${passId}`)
+  checkIn : (passId) => api.post(`/verify/checkin/${passId}`),
+  
 };
 
 export const adminAPI = {
