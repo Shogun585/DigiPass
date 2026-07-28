@@ -129,16 +129,16 @@ Start the local server instance:
 ```bash
 npm start
 ```
-The API engine will activate locally on http://localhost:5000
+The API engine will activate locally on http://localhost:8000
 
 ### 3️⃣ Frontend Setup
 Open a separate terminal window, access the client workspace, and trigger assembly:
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
-Frontend development engine targets: http://localhost:3000
+Frontend development engine targets: http://localhost:5173
 
 ---
 
