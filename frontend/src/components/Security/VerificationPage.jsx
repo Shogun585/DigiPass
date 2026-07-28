@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { verifyAPI } from '../../services/api';
+import { Scanner } from '@yudiel/react-qr-scanner';
 
 const VerificationPage = () => {
   const [collegeId, setCollegeId] = useState('');
@@ -36,25 +37,45 @@ const VerificationPage = () => {
     }
   };
 
-  const handleBarcodeScan = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // !Depreceated
+  // const handleBarcodeScan = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+  //   setLoading(true);
+  //   setVerificationResult(null);
+  //   try {
+  //     const response = await verifyAPI.scanBarcode(file);
+  //     setVerificationResult(response.data);
+  //   } catch (error) {
+  //     console.error('Barcode scan error:', error);
+  //     setVerificationResult({
+  //       valid: false,
+  //       message: error.response?.data?.detail || 'Failed to scan barcode',
+  //       pass_details: null,
+  //       user_details: null,
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //     if (fileInputRef.current) fileInputRef.current.value = '';
+  //   }
+  // };
+
+  const handleScan = async (text) => {
+    if (loading) return; // Prevent double scanning
     setLoading(true);
     setVerificationResult(null);
     try {
-      const response = await verifyAPI.scanBarcode(file);
+      
+      const response = await verifyAPI.scanQR({ qr_token: text }); 
       setVerificationResult(response.data);
+      setScanMode('manual'); 
     } catch (error) {
-      console.error('Barcode scan error:', error);
       setVerificationResult({
         valid: false,
-        message: error.response?.data?.detail || 'Failed to scan barcode',
-        pass_details: null,
-        user_details: null,
+        message: error.response?.data?.detail || 'Invalid QR Code',
       });
     } finally {
       setLoading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -154,7 +175,24 @@ const VerificationPage = () => {
           </div>
 
           <div className="p-6 sm:p-8">
-            {scanMode === 'manual' ? (
+            {scanMode === 'scan' ? (
+              
+              <div className="rounded-2xl overflow-hidden ring-4 ring-slate-100 bg-black aspect-square flex items-center justify-center relative">
+                <Scanner 
+                  onScan={(detectedCodes) => {
+                    if (detectedCodes && detectedCodes.length > 0) {
+                      handleScan(detectedCodes[0].rawValue);
+                    }
+                  }}
+                  onError={(error) => console.log(error?.message)} 
+                  options={{ delayBetweenScanAttempts: 1000 }}
+                />
+                <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-xs font-medium bg-black/40 py-1.5 backdrop-blur-md">
+                  Point camera at Student's QR Code
+                </div>
+              </div>
+            ) : (
+              
               <form onSubmit={handleManualVerify} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">College ID</label>
@@ -201,55 +239,6 @@ const VerificationPage = () => {
                   </button>
                 </div>
               </form>
-            ) : (
-              <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleBarcodeScan}
-                  id="barcode-file-input"
-                  className="hidden"
-                  disabled={loading}
-                />
-                <label
-                  htmlFor="barcode-file-input"
-                  className="block py-12 px-6 border-2 border-dashed border-indigo-300 rounded-xl bg-indigo-50/40 hover:bg-indigo-50 cursor-pointer transition text-center"
-                >
-                  {loading ? (
-                    <div className="flex flex-col items-center gap-2 text-indigo-700">
-                      <svg className="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                      </svg>
-                      <p className="text-sm font-medium">Scanning barcode…</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-12 h-12 rounded-xl bg-white shadow-sm ring-1 ring-indigo-100 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      </div>
-                      <p className="font-semibold text-slate-900">Capture or Upload ID Card</p>
-                      <p className="text-xs text-slate-500">Supports JPG, PNG · Tap to choose a file</p>
-                    </div>
-                  )}
-                </label>
-
-                {verificationResult && (
-                  <div className="flex justify-end mt-4">
-                    <button
-                      onClick={handleReset}
-                      className="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                )}
-              </div>
             )}
 
             {/* Result */}
@@ -270,15 +259,26 @@ const VerificationPage = () => {
                     </div>
 
                     {verificationResult?.user_details && (
-                      <div className="bg-white rounded-lg p-4 mb-3 ring-1 ring-slate-200">
-                        <h4 className="text-sm font-semibold text-slate-900 mb-2">Student Information</h4>
-                        <Row label="Name">
-                          {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
-                        </Row>
-                        <Row label="College ID">{verificationResult.user_details?.id || 'N/A'}</Row>
-                        {verificationResult.user_details?.contact_details && (
-                          <Row label="Contact">{verificationResult.user_details.contact_details}</Row>
-                        )}
+                      <div className="bg-white rounded-xl p-5 mb-4 ring-1 ring-slate-200 flex flex-col sm:flex-row gap-5 items-start">
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-xl overflow-hidden bg-slate-100 ring-1 ring-slate-200">
+                          {verificationResult.user_details.photo_url ? (
+                            <img src={verificationResult.user_details.photo_url} alt="Student" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-300 bg-slate-50">
+                              {verificationResult.user_details.first_name[0]}{verificationResult.user_details.last_name[0]}
+                            </div>
+                          )}
+                        </div>
+                        <div className='flex-1 w-full'>
+                            <h4 className="text-sm font-semibold text-slate-900 mb-2">Student Information</h4>
+                            <Row label="Name">
+                              {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
+                            </Row>
+                            <Row label="College ID">{verificationResult.user_details?.id || 'N/A'}</Row>
+                            {verificationResult.user_details?.contact_details && (
+                              <Row label="Contact">{verificationResult.user_details.contact_details}</Row>
+                            )}
+                        </div>
                       </div>
                     )}
 
