@@ -2,6 +2,7 @@ const express = require('express');
 const prisma = require('../utils/database');
 const { getCurrentUser, requireRole } = require('../utils/oauth2');
 const { schemas, validate } = require('../utils/schemas');
+const crypto = require('crypto');
 
 const router = express.Router();
 
@@ -135,11 +136,17 @@ router.put('/status/:pass_id', getCurrentUser, requireRole(['warden']), validate
         const pass = await prisma.leavePass.findUnique({ where: { pass_id: passId } });
         if (!pass) return res.status(404).json({ detail: `Pass with id ${passId} not found` });
 
+        let qrToken = null;
+        if (pass_status === 'approved' && pass.pass_status !== 'approved') {
+            qrToken = crypto.randomBytes(4).toString('hex');
+        }
+
         const updatedPass = await prisma.leavePass.update({
             where: { pass_id: passId },
             data: { 
                 pass_status: req.body.pass_status,
-                remark : remark || null
+                remark : remark || null,
+                ...(qrToken && {qr_token : qrToken})
             }
         });
 
