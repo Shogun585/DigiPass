@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -106,7 +106,7 @@ export const verifyAPI = {
 
   checkOut : (passId) => api.post(`/verify/checkout/${passId}`),
   checkIn : (passId) => api.post(`/verify/checkin/${passId}`),
-  
+  scanQR: (data) => api.post('/verify/scan', data)
 };
 
 export const adminAPI = {
