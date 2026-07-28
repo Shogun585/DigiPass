@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { usePass } from '../../context/PassContext';
+import { getLocalDDMMYYY } from '../Student/ViewPass';
 
 const ApprovalPage = () => {
   const { logout } = useAuth();
@@ -16,6 +17,8 @@ const ApprovalPage = () => {
   const [remarks, setRemarks] = useState({});
   const [attendance] = useState(85);
 
+  
+
   useEffect(() => {
     if(viewMode === 'pending'){
       loadPendingPasses()
@@ -23,12 +26,7 @@ const ApprovalPage = () => {
     if(viewMode === 'late'){
       loadLatePasses();
     }
-  }, [loadLatePasses, loadPendingPasses, viewMode]);
-
-  // const fetchStudentAttendance = () => {
-  //   return 85;
-  //   // TODO : add API to fetch attendance from ERP
-  // }
+  }, []);
 
   const loadPendingPasses = async () => {
     setLoading(true);
@@ -43,6 +41,13 @@ const ApprovalPage = () => {
     setPendingPasses(passes || []);
     setLoading(false);
   };
+
+  // const fetchStudentAttendance = () => {
+  //   return 85;
+  //   // TODO : add API to fetch attendance from ERP
+  // }
+
+  
 
   // const initializeRemarks = (passList) => {
   //   const initialRemarks = {};
@@ -211,7 +216,9 @@ const ApprovalPage = () => {
                     <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Pass Type</th>
                     {viewMode === 'pending' ? (
                       <>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Attendance</th>
                         <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Date</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Remark</th>
                         <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Action</th>
                       </>
                     ) : (
@@ -254,7 +261,7 @@ const ApprovalPage = () => {
 
                         {viewMode === 'pending' && (
                           <>
-                            <td className="px-6 py-4 text-slate-700">{pass.leave_start.split('T')[0]}</td>
+                            <td className="px-6 py-4 text-slate-700">{getLocalDDMMYYY(pass.leave_start)}</td>
                             <td className="px-4 py-4">
                               <input 
                                 type="text"
