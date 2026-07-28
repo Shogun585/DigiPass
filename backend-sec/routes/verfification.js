@@ -7,13 +7,10 @@ const { extractBarcodeFromBuffer } = require('../utils/barcode_scanner');
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-const verifyPassLogic = async (collegeId) => {
-    const user = await prisma.user.findUnique({ where: { id: collegeId } });
+const verifyPassLogic = async ({ collegeId, qrToken }) => {
+    let validPass = null;
+    let targetUser = null;
     
-    if (!user) {
-        return { valid: false, message: `User with ID ${collegeId} not found`, pass_details: null, user_details: null };
-    }
-
     const getLocalYYYYMMDD = (dateInput) => {
         const d = dateInput ? new Date(dateInput) : new Date();
         const year = d.getFullYear();
@@ -21,55 +18,67 @@ const verifyPassLogic = async (collegeId) => {
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
-
-    const { password, ...userWithoutPassword } = user;
     const today = new Date(getLocalYYYYMMDD());
-    
-    // console.log(today)
-    
-    const validPass = await prisma.leavePass.findFirst({
-        where: {
-            college_id: collegeId,
-            pass_status: 'approved',
-            leave_start: { lte: today },
-            leave_end: { gte: today }
-        },
-        orderBy : {
-            request_time : 'desc'
-        },
-        include : {
-            logs : {
-                orderBy : {
-                    scan_time : 'desc'
-                },
-                take : 1
-            }
-        }
-    });
 
-    if (!validPass) {
-        return {
-            valid: false,
-            message: `No valid approved pass found for ${user.first_name} ${user.last_name}`,
-            pass_details: null,
-            user_details: userWithoutPassword
-        };
+    if (qrToken) {
+        validPass = await prisma.leavePass.findUnique({
+            where: { qr_token: qrToken },
+            include: {
+                college: true, 
+                logs: { orderBy: { scan_time: 'desc' }, take: 1 }
+            }
+        });
+
+        if (!validPass) {
+            return { valid: false, message: "Invalid or forged QR Code.", pass_details: null, user_details: null };
+        }
+        
+        targetUser = validPass.college;
+
+        const startDate = new Date(getLocalYYYYMMDD(validPass.leave_start));
+        const endDate = new Date(getLocalYYYYMMDD(validPass.leave_end));
+        if (startDate > today || endDate < today) {
+            const { password, ...safeUser } = targetUser;
+            return { valid: false, message: "This pass is not valid for today's date.", pass_details: null, user_details: safeUser };
+        }
+    }else if (collegeId) {
+        targetUser = await prisma.user.findUnique({ where: { id: collegeId } });
+        if (!targetUser) return { valid: false, message: `User with ID ${collegeId} not found`, pass_details: null, user_details: null };
+
+        validPass = await prisma.leavePass.findFirst({
+            where: {
+                college_id: collegeId,
+                pass_status: 'approved',
+                leave_start: { lte: today },
+                leave_end: { gte: today }
+            },
+            orderBy: { request_time: 'desc' },
+            include: { logs: { orderBy: { scan_time: 'desc' }, take: 1 } }
+        });
+
+        if (!validPass) {
+            const { password, ...safeUser } = targetUser;
+            return { valid: false, message: `No valid approved pass found for ${targetUser.first_name}`, pass_details: null, user_details: safeUser };
+        }
+    } else {
+        return { valid: false, message: "No scanning data provided.", pass_details: null, user_details: null };
     }
 
+    const { password, ...userWithoutPassword } = targetUser;
     const isCheckedIn = validPass.logs.length > 0 && validPass.logs[0].student_status === 'in';
 
     if(isCheckedIn){
         return { 
             valid: false, 
-            message: "This pass has already been used and checked back in. Waiting for new passes to be approved.", 
-            pass_details: null, 
+            message: "This pass has already been used and checked back in.", 
+            pass_details: validPass, 
             user_details: userWithoutPassword 
         };
     }
 
     return {
         valid: true,
-        message: `Valid ${validPass.pass_type} pass found for ${user.first_name} ${user.last_name}`,
+        message: `Valid ${validPass.pass_type} pass found for ${targetUser.first_name}`,
         pass_details: validPass,
         user_details: userWithoutPassword
     };
@@ -175,28 +184,16 @@ router.post('/checkin/:pass_id', getCurrentUser, requireRole(['guard']), async(r
     }
 })
 
-router.post('/scan', getCurrentUser, requireRole(['guard']), upload.single('file'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ detail: "No image uploaded" });
-    }
+router.post('/scan', getCurrentUser, requireRole(['guard']), async (req, res) => {
+    const { qr_token } = req.body;
+    if (!qr_token) return res.status(400).json({ detail: "No QR token provided" });
 
-    const result = await extractBarcodeFromBuffer(req.file.buffer);
-
-    if (!result.ok) {
-        return res.status(400).json({ detail: `Failed to scan barcode: ${result.reason}` });
-    }
-
-    const collegeId = result.data.trim();
-    if (!collegeId) {
-        return res.status(400).json({ detail: "Barcode data is empty" });
-    }
-
-    const verificationResponse = await verifyPassLogic(collegeId);
+    const verificationResponse = await verifyPassLogic({ qrToken: qr_token });
     res.json(verificationResponse);
 });
 
 router.get('/manual/:college_id', getCurrentUser, requireRole(['guard']), async (req, res) => {
-    const verificationResponse = await verifyPassLogic(req.params.college_id);
+    const verificationResponse = await verifyPassLogic({collegeId : req.params.college_id});
     res.json(verificationResponse);
 });
 
