@@ -61,6 +61,8 @@ model User {
   role            Role
   contact_details String?     @db.VarChar(50)
   parent_email    String?     @db.VarChar(100) // Added for notifications
+
+  photo_url       String?     @db.Text
   
   is_active Boolean @default(true)
 
@@ -84,6 +86,8 @@ model LeavePass {
   is_extension Boolean @default(false)
 
   remark String? @db.Text
+
+  qr_token     String?    @unique @db.VarChar(16)
 
   // Relationships
   college      User       @relation(fields: [college_id], references: [id])
