@@ -2,6 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { passAPI } from '../../services/api';
+import { QRCodeSVG } from 'qrcode.react';
+
+export const getLocalDDMMYYY = (dateInput) => {
+  const d = dateInput ? new Date(dateInput) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${day}-${month}-${year}`;
+};
 
 const ViewPass = () => {
   const [passes, setPasses] = useState([]);
@@ -22,15 +31,9 @@ const ViewPass = () => {
 
   const [extendError, setExtendError] = useState('');
 
-  const getLocalYYYYMMDD = (dateInput) => {
-    const d = dateInput ? new Date(dateInput) : new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+  const [activeQR, setActiveQR] = useState(null);
 
-  const now = getLocalYYYYMMDD()
+  const now = getLocalDDMMYYY()
 
   const handleConvertPass = async () =>{
     if(!newEndDate){
@@ -109,7 +112,7 @@ const ViewPass = () => {
   const StatusBadge = ({ status }) => {
     const s = (status || 'pending').toLowerCase();
     const styles = {
-      approved: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+      approved: 'bg-emerald-50 text-emerald-700 ring-emerald-200 md:mr-2',
       rejected: 'bg-rose-50 text-rose-700 ring-rose-200',
       pending: 'bg-amber-50 text-amber-800 ring-amber-200',
     };
@@ -136,13 +139,13 @@ const ViewPass = () => {
   );
 
   const selectedPass = passes.find(p => p.pass_id === extendPassId);
-  let minExtensionDate = getLocalYYYYMMDD(); 
+  let minExtensionDate = getLocalDDMMYYY(); 
 
   if (selectedPass) {
       const currentEnd = new Date(selectedPass.leave_end);
    
       currentEnd.setDate(currentEnd.getDate() + 1); 
-      minExtensionDate = getLocalYYYYMMDD(currentEnd);
+      minExtensionDate = getLocalDDMMYYY(currentEnd);
   }
 
   return (
@@ -259,8 +262,8 @@ const ViewPass = () => {
                   {
                     
                     passes.map((pass, idx) => {
-                      const given = getLocalYYYYMMDD(pass.leave_start);
-                      const passEndDate = getLocalYYYYMMDD(pass.leave_end);
+                      const given = getLocalDDMMYYY(pass.leave_start);
+                      const passEndDate = getLocalDDMMYYY(pass.leave_end);
 
                       const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
                       const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn
@@ -280,11 +283,22 @@ const ViewPass = () => {
                           <td className="px-6 py-4 text-slate-700">
                             {given === passEndDate ? "" : passEndDate}
                           </td>
-                          <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate" title={pass.remark}>
+                          <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate md:flex md:justify-end" title={pass.remark}>
                             {pass.remark || '-'}
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <StatusBadge status={pass.pass_status} />
+                              <div className='flex gap-2 md:flex md:justify-end'>
+                                <StatusBadge status={pass.pass_status} />
+
+                                {pass.pass_status === 'approved' && pass.qr_token && !isCheckedIn && (
+                                    <button 
+                                      onClick={() => setActiveQR(pass.qr_token)}
+                                      className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 transition"
+                                    >
+                                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+                                    </button>
+                                  )}
+                              </div>
                           </td>
                           <td className="px-6 py-4 text-right flex justify-end gap-2">
                             {isEligibleForExtension && (
@@ -318,6 +332,21 @@ const ViewPass = () => {
             </div>
           )}
         </div>
+        {activeQR && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setActiveQR(null)}>
+          <div className="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Your Gate Pass</h3>
+            <p className="text-sm text-slate-500 mb-8 text-center">Present this QR code to the security guard at the gate for scanning.</p>
+            
+            <div className="bg-white p-4 rounded-2xl ring-4 ring-indigo-50 shadow-inner mb-6">
+              <QRCodeSVG value={activeQR} size={200} level="H" fgColor="#0f172a" />
+            </div>
+            
+            <p className="font-mono text-xs text-slate-400 mb-6 bg-slate-50 px-3 py-1 rounded">Token: {activeQR}</p>
+            <button onClick={() => setActiveQR(null)} className="w-full py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition">Close</button>
+          </div>
+        </div>
+      )}
       </main>
       {showConvertModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
