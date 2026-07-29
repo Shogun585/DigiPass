@@ -242,7 +242,7 @@ const ApprovalPage = () => {
                             </div>
                             <div>
                               <p className="font-medium text-slate-900">
-                                {pass.user?.first_name ? `${pass.user.first_name} ${pass.user.last_name}` : pass.college_id}
+                                {pass.college?.first_name ? `${pass.college.first_name} ${pass.college.last_name}` : pass.college_id}
                               </p>
                               <p className="text-xs text-slate-500">{pass.college_id}</p>
                             </div>
