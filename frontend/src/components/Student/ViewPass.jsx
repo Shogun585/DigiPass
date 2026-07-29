@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { passAPI } from '../../services/api';
+export const getLocalDDMMYYY = (dateInput) => {
+  const d = dateInput ? new Date(dateInput) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${day}-${month}-${year}`;
+};
 
 const ViewPass = () => {
   const [passes, setPasses] = useState([]);
@@ -22,15 +29,8 @@ const ViewPass = () => {
 
   const [extendError, setExtendError] = useState('');
 
-  const getLocalYYYYMMDD = (dateInput) => {
-    const d = dateInput ? new Date(dateInput) : new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
-  const now = getLocalYYYYMMDD()
+  const now = getLocalDDMMYYY()
 
   const handleConvertPass = async () =>{
     if(!newEndDate){
@@ -109,7 +109,7 @@ const ViewPass = () => {
   const StatusBadge = ({ status }) => {
     const s = (status || 'pending').toLowerCase();
     const styles = {
-      approved: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+      approved: 'bg-emerald-50 text-emerald-700 ring-emerald-200 md:mr-2',
       rejected: 'bg-rose-50 text-rose-700 ring-rose-200',
       pending: 'bg-amber-50 text-amber-800 ring-amber-200',
     };
@@ -136,13 +136,13 @@ const ViewPass = () => {
   );
 
   const selectedPass = passes.find(p => p.pass_id === extendPassId);
-  let minExtensionDate = getLocalYYYYMMDD(); 
+  let minExtensionDate = getLocalDDMMYYY(); 
 
   if (selectedPass) {
       const currentEnd = new Date(selectedPass.leave_end);
    
       currentEnd.setDate(currentEnd.getDate() + 1); 
-      minExtensionDate = getLocalYYYYMMDD(currentEnd);
+      minExtensionDate = getLocalDDMMYYY(currentEnd);
   }
 
   return (
@@ -259,8 +259,8 @@ const ViewPass = () => {
                   {
                     
                     passes.map((pass, idx) => {
-                      const given = getLocalYYYYMMDD(pass.leave_start);
-                      const passEndDate = getLocalYYYYMMDD(pass.leave_end);
+                      const given = getLocalDDMMYYY(pass.leave_start);
+                      const passEndDate = getLocalDDMMYYY(pass.leave_end);
 
                       const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
                       const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn
@@ -280,11 +280,13 @@ const ViewPass = () => {
                           <td className="px-6 py-4 text-slate-700">
                             {given === passEndDate ? "" : passEndDate}
                           </td>
-                          <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate" title={pass.remark}>
+                          <td className="px-6 py-4 text-slate-600 italic text-xs max-w-[200px] truncate md:flex md:justify-end" title={pass.remark}>
                             {pass.remark || '-'}
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <StatusBadge status={pass.pass_status} />
+                              <div className='flex gap-2 md:flex md:justify-end'>
+                                <StatusBadge status={pass.pass_status} />
+                              </div>
                           </td>
                           <td className="px-6 py-4 text-right flex justify-end gap-2">
                             {isEligibleForExtension && (
