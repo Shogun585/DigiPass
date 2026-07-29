@@ -220,6 +220,7 @@ const ApprovalPage = () => {
                         <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Date</th>
                         <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Remark</th>
                         <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Action</th>
+                        <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Parent's Contact</th>
                       </>
                     ) : (
                       <>
@@ -295,6 +296,32 @@ const ApprovalPage = () => {
                                   </button>
                                 </div>
                               )}
+                            </td>
+                            <td className='px-6 py-4'>
+                              {pass.pass_type === 'market' ? (
+                                <div className="flex items-center justify-center">
+                                  {/* DESKTOP VIEW: Plain Text */}
+                                  <span className="hidden sm:block text-sm font-medium text-slate-900">
+                                    {pass.college?.parents_phone || 'Not Provided'}
+                                  </span>
+
+                                  {/* MOBILE VIEW: Quick Dial Button */}
+                                  {pass.college?.parents_phone ? (
+                                    <a 
+                                      href={`tel:${pass.college.parents_phone}`}
+                                      className="sm:hidden inline-flex items-start gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 ring-1 ring-indigo-200 transition-colors"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                      </svg>
+                                      <span className="text-xs font-bold">Dial</span>
+                                    </a>
+                                  ) : (
+                                    <span className="sm:hidden text-xs text-slate-400 italic">Not Provided</span>
+                                  )}
+                                </div>  
+                              ) : ('-')}
+                              
                             </td>
                           </>
                         )}
