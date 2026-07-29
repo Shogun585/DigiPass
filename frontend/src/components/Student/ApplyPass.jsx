@@ -14,10 +14,12 @@ const getLocalYYYYMMDD = (dateInput) => {
 const ApplyPass = () => {
   const userDetails = JSON.parse(localStorage.getItem('user'));
 
-  const [setPassType] = useState('market');
+  const [passType, setPassType] = useState('market');
   const [showLeaveSection, setShowLeaveSection] = useState(false);
   const [leaveStartDate, setLeaveStartDate] = useState('');
   const [leaveEndDate, setLeaveEndDate] = useState('');
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: `${userDetails.first_name} ${userDetails.last_name}`,
@@ -65,23 +67,30 @@ const ApplyPass = () => {
       return;
     }
 
+    setIsSubmitting(true);
     const today = getLocalYYYYMMDD();
 
-    const result = await addPass({
-      name: formData.name,
-      admissionId: formData.admissionId,
-      course: formData.course,
-      passType: formData.passType,
-      leave_start: today,
-      leave_end: formData.passType === 'Market Pass' ? today : leaveEndDate || today,
-    });
+    try {
+      const result = await addPass({
+        name: formData.name,
+        admissionId: formData.admissionId,
+        course: formData.course,
+        passType: formData.passType,
+        leave_start: today,
+        leave_end: formData.passType === 'Market Pass' ? today : leaveEndDate || today,
+      });
 
-    if (result.success) {
-      alert('Pass application submitted successfully!');
-      navigate('/view-pass');
-    } else {
-      setError(result.error || 'Failed to create pass');
+      if (result.success) {
+        alert('Pass application submitted successfully!');
+        navigate('/view-pass');
+      } else {
+        setError(result.error || 'Failed to create pass');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
+
+    
   };
 
   const handleLogout = () => {
@@ -118,14 +127,14 @@ const ApplyPass = () => {
 
       {/* Body */}
       <main className="max-w-4xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">New Pass Application</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">New Pass Application</h2>
             <p className="text-sm text-slate-500 mt-1">Fill in your details to request a hostel pass.</p>
           </div>
           <button
             onClick={() => navigate('/view-pass')}
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:border-indigo-400 hover:text-indigo-700 transition"
+            className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:border-indigo-400 hover:text-indigo-700 transition"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -167,6 +176,7 @@ const ApplyPass = () => {
                   onChange={handleChange}
                   placeholder="Enter your name"
                   className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
+                  readOnly
                 />
                 {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
               </div>
@@ -310,7 +320,17 @@ const ApplyPass = () => {
                 type="submit"
                 className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 transition"
               >
-                Submit Application
+                {isSubmitting ? (
+                  <div className='flex'>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    Submitting...
+                  </div>
+                ) : (
+                  'Submit Application'
+                )}
               </button>
             </div>
           </form>
