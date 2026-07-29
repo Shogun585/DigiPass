@@ -90,7 +90,18 @@ router.post('/', getCurrentUser, requireRole(['student']), validate(schemas.pass
 });
 
 router.get('/pending', getCurrentUser, requireRole(['warden']), async (req, res) => {
-    const passes = await prisma.leavePass.findMany({ where: { pass_status: 'pending' } });
+    const passes = await prisma.leavePass.findMany({ 
+        where: { pass_status: 'pending' },
+        include : {
+            college : {
+                select : {
+                    first_name : true,
+                    last_name : true,
+                    parent_email : true
+                }
+            }
+        }
+    });
     res.json(passes);
 });
 
