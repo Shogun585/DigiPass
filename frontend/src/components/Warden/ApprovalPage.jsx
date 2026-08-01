@@ -94,25 +94,6 @@ const ApprovalPage = () => {
     navigate('/');
   };
 
-  // const StatusBadge = ({ status }) => {
-  //   const s = (status || '').toLowerCase();
-  //   if (s === 'approved') {
-  //     return (
-  //       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
-  //         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Approved
-  //       </span>
-  //     );
-  //   }
-  //   if (s === 'rejected') {
-  //     return (
-  //       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-200">
-  //         <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Rejected
-  //       </span>
-  //     );
-  //   }
-  //   return null;
-  // };
-
   const pendingCount = pendingPasses.filter(
     (p) => !p.pass_status || !['approved', 'rejected'].includes((p.pass_status || '').toLowerCase())
   ).length;
