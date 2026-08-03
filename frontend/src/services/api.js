@@ -88,7 +88,8 @@ export const passAPI = {
       api.post(`/pass/extend/${passId}`, {new_leave_end : newDate})
     },
     getLateReturns : () => api.get('/pass/late-returns'),
-    addPassRemark : (passId, remark) => api.put(`/pass/remark/${passId}`, {remark})
+    addPassRemark : (passId, remark) => api.put(`/pass/remark/${passId}`, {remark}),
+    getAllLogs : () => api.get('/pass/logs')
   };
 
 // Verification API

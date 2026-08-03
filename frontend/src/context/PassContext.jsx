@@ -112,6 +112,16 @@ export const PassProvider = ({ children }) => {
       }
   }
 
+  const getAllLogs = async () => {
+    try {
+        const response = await passAPI.getAllLogs();
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch logs:", error);
+        return [];
+    }
+};
+
   return (
     <PassContext.Provider value={{ 
       passes, 
@@ -122,7 +132,8 @@ export const PassProvider = ({ children }) => {
       getPendingPasses,
       fetchAllPasses,
       getLateReturns,
-      addPassRemark
+      addPassRemark,
+      getAllLogs
     }}>
       {children}
     </PassContext.Provider>
