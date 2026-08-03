@@ -394,4 +394,31 @@ router.put('/remark/:pass_id', getCurrentUser, requireRole(['admin', 'warden']),
     }
 })
 
+router.get('/logs', getCurrentUser, requireRole(['warden', 'admin']), async (req, res) => {
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    try {
+        const logs = await prisma.log.findMany({
+            where : {scan_time : {gte : twentyFourHoursAgo}},
+            orderBy: { scan_time: 'desc' },
+            include: {
+                staff: { 
+                    select: { first_name: true, last_name: true }
+                },
+                leave_pass: { 
+                    include: {
+                        college: {
+                            select: { id: true, first_name: true, last_name: true }
+                        }
+                    }
+                }
+            }
+        });
+        res.json(logs);
+    } catch (error) {
+        console.error("Error fetching logs:", error);
+        res.status(500).json({ detail: "Failed to fetch logs" });
+    }
+});
+
 module.exports = router;
