@@ -16,6 +16,9 @@ app.use(express.json());
 app.use((req, res, next)=>{
     res.setHeader('X-Author', 'Abhilash Singh');
     res.setHeader('X-Project-Name', 'ShelfLife');
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     next();
 });
 
