@@ -112,13 +112,13 @@ export const PassProvider = ({ children }) => {
       }
   }
 
-  const getAllLogs = async () => {
+  const getAllLogs = async (page = 1, limit = 20) => {
     try {
-        const response = await passAPI.getAllLogs();
+        const response = await passAPI.getAllLogs(page, limit);
         return response.data;
     } catch (error) {
         console.error("Failed to fetch logs:", error);
-        return [];
+        return {logs : [], totalPages : 1, currentPage : 1};
     }
 };
 

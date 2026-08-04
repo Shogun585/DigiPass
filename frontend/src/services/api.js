@@ -89,7 +89,7 @@ export const passAPI = {
     },
     getLateReturns : () => api.get('/pass/late-returns'),
     addPassRemark : (passId, remark) => api.put(`/pass/remark/${passId}`, {remark}),
-    getAllLogs : () => api.get('/pass/logs')
+    getAllLogs: (page = 1, limit = 20) => api.get(`/pass/logs?page=${page}&limit=${limit}`)
   };
 
 // Verification API
