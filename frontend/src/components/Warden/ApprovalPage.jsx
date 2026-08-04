@@ -8,63 +8,69 @@ const ApprovalPage = () => {
   const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pendingPasses, setPendingPasses] = useState([]);
+  const [latePasses, setLatePasses] = useState([]);
   const { updatePassStatus, getPendingPasses, getLateReturns, addPassRemark, getAllLogs } = usePass();
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState('pending');
-  const [latePasses] = useState([]);
-
   const [remarks, setRemarks] = useState({});
   const [attendance] = useState(85);
 
   const [logs, setLogs] = useState([]);
   const [logFilter, setLogFilter] = useState('all');  
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     if(viewMode === 'pending'){
-      loadPendingPasses()
-    }else if(viewMode === 'late'){
+      loadPendingPasses(false);
+    } else if(viewMode === 'late'){
       loadLatePasses();
-    }else if(viewMode === 'logs'){
-      loadLogs();
+    } else if(viewMode === 'logs'){
+      loadLogs(currentPage, false); 
     }
-  }, [viewMode]);
+    const intervalId = setInterval(() => {
+      if (viewMode === 'pending') {
+        loadPendingPasses(true);
+      } else if (viewMode === 'logs') {
+        loadLogs(currentPage, true);
+      }
+    }, 15000);
 
-  const loadPendingPasses = async () => {
-    setLoading(true);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [viewMode, currentPage]);
+
+  const loadPendingPasses = async (isBackgroundRefresh = false) => {
+    if (!isBackgroundRefresh) setLoading(true);
+    
     const passes = await getPendingPasses();
     setPendingPasses(passes || []);
-    setLoading(false);
+    
+    if (!isBackgroundRefresh) setLoading(false);
   };
 
   const loadLatePasses = async () => {
     setLoading(true);
     const passes = await getLateReturns();
-    setPendingPasses(passes || []);
+    setLatePasses(passes || []);
     setLoading(false);
   };
 
-  const loadLogs = async () => {
-    setLoading(true);
-    const fetchedLogs = await getAllLogs();
-    setLogs(fetchedLogs || []);
-    setLoading(false);
+  const loadLogs = async (page = 1, isBackgroundRefresh = false) => {
+
+    if (!isBackgroundRefresh) setLoading(true);
+    
+    const data = await getAllLogs(page, 20); 
+    
+    setLogs(data.logs || []);
+    setTotalPages(data.totalPages || 1);
+    setCurrentPage(data.currentPage || 1);
+    
+    if (!isBackgroundRefresh) setLoading(false);
   };
-
-  // const fetchStudentAttendance = () => {
-  //   return 85;
-  //   // TODO : add API to fetch attendance from ERP
-  // }
-
-  
-
-  // const initializeRemarks = (passList) => {
-  //   const initialRemarks = {};
-  //   passList.forEach(p => {
-  //     if(p.remark) initialRemarks[p.pass_id] = p.remark;
-  //   });
-  //   setRemarks(initialRemarks);
-  // }
 
   const handleRemarkChange = (passId, value) => {
     setRemarks(prev => ({ ...prev, [passId]: value }));
@@ -121,24 +127,12 @@ const ApprovalPage = () => {
   if (viewMode === 'pending') displayData = pendingPasses;
   if (viewMode === 'late') displayData = latePasses;
   if (viewMode === 'logs') {
-    // 1. Group logs by pass_id, keeping only the latest log per pass
-    const latestLogsMap = new Map();
-    logs.forEach(log => {
-      // Because logs are sorted by time (newest first), the first one we insert is the latest
-      if (!latestLogsMap.has(log.pass_id)) {
-        latestLogsMap.set(log.pass_id, log);
-      }
-    });
-    
-    // Convert the Map back to an array
-    const latestLogs = Array.from(latestLogsMap.values());
-
-    // 2. Apply the UI filters (all, checked_in, checked_out) to the filtered list
-    displayData = latestLogs.filter(log => {
+    displayData = logs.filter(log => {
       if (logFilter === 'all') return true;
       return log.action === logFilter;
     });
   }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <header className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white shadow-lg">
@@ -213,7 +207,7 @@ const ApprovalPage = () => {
               onClick={() => {
                 if(viewMode === 'pending') loadPendingPasses();
                 if(viewMode === 'late') loadLatePasses();
-                if(viewMode === 'logs') loadLogs();
+                if(viewMode === 'logs') loadLogs(currentPage);
               }}
               className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition shadow-sm"
             >
@@ -258,7 +252,6 @@ const ApprovalPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    {/* Dynamic Table Headers Based on Mode */}
                     {viewMode === 'logs' ? (
                       <>
                         <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Scan ID</th>
@@ -293,7 +286,6 @@ const ApprovalPage = () => {
                 <tbody className="divide-y divide-slate-100">
                   {displayData.map((item, idx) => {
                     
-                    // Render row for LOGS view
                     if (viewMode === 'logs') {
                       const log = item;
                       const student = log.leave_pass?.college;
@@ -325,7 +317,6 @@ const ApprovalPage = () => {
                       );
                     }
 
-                    // Render row for PENDING/LATE views
                     const pass = item;
                     const isActed = pass.pass_status && ['approved', 'rejected'].includes(pass.pass_status.toLowerCase());
                     
@@ -449,6 +440,31 @@ const ApprovalPage = () => {
               <p className="text-sm text-slate-500 mt-1">
                 {viewMode === 'logs' ? 'No activity logs match the current filter.' : 'You are all caught up.'}
               </p>
+            </div>
+          )}
+
+          {/* Pagination Footer Controls; renders for Activity Logs*/}
+          {viewMode === 'logs' && totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 bg-slate-50">
+              <span className="text-sm text-slate-500">
+                Page <span className="font-medium text-slate-900">{currentPage}</span> of <span className="font-medium text-slate-900">{totalPages}</span>
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-sm font-medium rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-sm font-medium rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 transition"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
