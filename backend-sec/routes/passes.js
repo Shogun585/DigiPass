@@ -395,26 +395,62 @@ router.put('/remark/:pass_id', getCurrentUser, requireRole(['admin', 'warden']),
 })
 
 router.get('/logs', getCurrentUser, requireRole(['warden', 'admin']), async (req, res) => {
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
     try {
-        const logs = await prisma.log.findMany({
-            where : {scan_time : {gte : twentyFourHoursAgo}},
-            orderBy: { scan_time: 'desc' },
-            include: {
-                staff: { 
-                    select: { first_name: true, last_name: true }
-                },
-                leave_pass: { 
-                    include: {
-                        college: {
-                            select: { id: true, first_name: true, last_name: true }
-                        }
-                    }
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const offset = (page - 1) * limit;
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const logs = await prisma.$queryRaw`
+            WITH LatestLogs AS (
+                SELECT DISTINCT ON (l.pass_id) 
+                    l.scan_id, l.pass_id, l.staff_id, l.action, l.student_status, l.scan_time,
+                    s.first_name AS staff_first_name, s.last_name AS staff_last_name,
+                    c.id AS student_id, c.first_name AS student_first_name, c.last_name AS student_last_name
+                FROM logs l
+                JOIN leave_pass p ON l.pass_id = p.pass_id
+                JOIN users s ON l.staff_id = s.id
+                JOIN users c ON p.college_id = c.id
+                WHERE l.scan_time >= ${twentyFourHoursAgo}
+                ORDER BY l.pass_id, l.scan_time DESC
+            )
+            SELECT * FROM LatestLogs
+            ORDER BY scan_time DESC
+            LIMIT ${limit} OFFSET ${offset};
+        `;
+
+        const countResult = await prisma.$queryRaw`
+            SELECT COUNT(DISTINCT pass_id)::int as total
+            FROM logs
+            WHERE scan_time >= ${twentyFourHoursAgo};
+        `;
+        const totalCount = countResult[0].total;
+
+        const formattedLogs = logs.map(log => ({
+            scan_id: log.scan_id,
+            pass_id: log.pass_id,
+            staff_id: log.staff_id,
+            action: log.action,
+            student_status: log.student_status,
+            scan_time: log.scan_time,
+            staff: {
+                first_name: log.staff_first_name,
+                last_name: log.staff_last_name
+            },
+            leave_pass: {
+                college: {
+                    id: log.student_id,
+                    first_name: log.student_first_name,
+                    last_name: log.student_last_name
                 }
             }
+        }));
+
+        res.json({
+            logs: formattedLogs,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
         });
-        res.json(logs);
     } catch (error) {
         console.error("Error fetching logs:", error);
         res.status(500).json({ detail: "Failed to fetch logs" });
