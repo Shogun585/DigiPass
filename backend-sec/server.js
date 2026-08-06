@@ -15,19 +15,19 @@ app.use(express.json());
 
 app.use((req, res, next)=>{
     res.setHeader('X-Author', 'Abhilash Singh');
-    res.setHeader('X-Project-Name', 'ShelfLife');
+    res.setHeader('X-Project-Name', 'DigiPass');
     next();
 });
 
-app.get('/keep-alive', (req, res)=>{
-    res.send("Keep alive!!");
-})
+// app.get('/keep-alive', (req, res)=>{
+//     res.send("Keep alive!!");
+// })
 
-setInterval(()=>{
-    fetch(`${BASE_URL}/keep-alive`)
-        .then(()=>console.log("Pinged self to stay alive."))
-        .catch((err)=>console.error("Ping failed : ", err))
-}, 10 * 60 * 1000);
+// setInterval(()=>{
+//     fetch(`${BASE_URL}/keep-alive`)
+//         .then(()=>console.log("Pinged self to stay alive."))
+//         .catch((err)=>console.error("Ping failed : ", err))
+// }, 10 * 60 * 1000);
 
 app.use(cors({
     origin : ORIGIN
