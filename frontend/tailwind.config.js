@@ -1,22 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-      "./index.html",
-      "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
-        keyframes : {
-            slideIn : {
-                '0%' : {opacity : '0', transform : 'translateY(-20px)'},
-                '100%' : {opacity : '1', transform : 'translateY(0)'}
-            }
+      colors: {
+        digipass: {
+          navy: '#10162F',      // Primary Navy
+          navyHover: '#182042', // Interactive Navy Hover
+          cyan: '#00A9E8',      // Accent Cyan
+          cyanLight: '#E6F6FC', // Subtle active card background
         },
-        animation : {
-            slideIn : 'slideIn 0.3s ease-out'
-        }
+      },
     },
   },
   plugins: [],
-}
-
+};
