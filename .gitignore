@@ -12,6 +12,8 @@ frontend/node_modules
 backend-sec/node_modules
 backend-sec/.env
 
+backend/
+
 js-based-barcode-reader/
 
 frontend-redesigned/
