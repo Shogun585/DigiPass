@@ -1,3 +1,4 @@
+import { LogOut, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -26,6 +27,7 @@ const ViewPass = () => {
   const [passes, setPasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedPassId, setExpandedPassId] = useState(null);
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -156,13 +158,6 @@ const ViewPass = () => {
       <header className="sticky top-0 z-20 bg-[#10162F] text-white shadow-lg border-b border-indigo-950/50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center transition-all duration-300">
           <div className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-default">
-            <span 
-              className="text-2xl font-bold text-white tracking-wider leading-none drop-shadow-md" 
-              style={{ fontFamily: "'Times New Roman', Times, serif" }}
-            >
-              IMSEC
-            </span>
-            <span className="text-2xl text-[#00A9E8] font-light leading-none">|</span>
             <img
               src="/digipass logo lateral.png"
               alt="DigiPass Logo"
@@ -171,12 +166,10 @@ const ViewPass = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="group h-10 px-4 text-xs font-semibold rounded-xl bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
+            className="group h-10 px-4 text-xs font-semibold rounded-[2.42px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
           >
-            <span>Logout</span>
-            <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a2 2 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <span className="hidden sm:inline">Logout</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
@@ -190,7 +183,7 @@ const ViewPass = () => {
           </div>
           <button
             onClick={() => navigate('/apply-pass')}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-medium text-sm shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[2.42px] bg-indigo-600 text-white font-medium text-sm shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -206,7 +199,7 @@ const ViewPass = () => {
             { label: 'Pending', value: counts.pending, color: 'text-amber-600', bg: 'bg-amber-500' },
             { label: 'Rejected', value: counts.rejected, color: 'text-rose-600', bg: 'bg-rose-500' },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl ring-1 ring-slate-200 p-5 flex items-center gap-4 shadow-sm">
+            <div key={s.label} className="bg-white rounded-[2.42px] ring-1 ring-slate-200 p-5 flex items-center gap-4 shadow-sm">
               <div className={`w-2 h-12 rounded-full ${s.bg} opacity-80`} />
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{s.label}</p>
@@ -217,7 +210,7 @@ const ViewPass = () => {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
           {loading ? (
             <div className="p-20 flex flex-col items-center justify-center gap-4">
               <svg className="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
@@ -236,7 +229,7 @@ const ViewPass = () => {
               <p className="text-slate-900 font-semibold">{error}</p>
               <button
                 onClick={fetchPasses}
-                className="mt-4 px-5 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition"
+                className="mt-4 px-5 py-2 rounded-[2.42px] bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition"
               >
                 Try Again
               </button>
@@ -252,7 +245,8 @@ const ViewPass = () => {
               <p className="text-sm text-slate-500 mt-1 max-w-sm">You haven't requested any hostel passes yet. Apply for your first pass to see it here.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-500">
@@ -265,7 +259,7 @@ const ViewPass = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {passes.map((pass, idx) => {
+                  {passes.slice().sort((a, b) => new Date(b.leave_start) - new Date(a.leave_start)).map((pass, idx) => {
                     const given = getLocalDDMMYYY(pass.leave_start);
                     const passEndDate = getLocalDDMMYYY(pass.leave_end);
                     const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
@@ -277,7 +271,7 @@ const ViewPass = () => {
                     return (
                       <tr key={pass.pass_id || idx} className="hover:bg-slate-50/50 transition-colors group">
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-semibold capitalize ring-1 ring-indigo-200">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-[2.42px] bg-indigo-50 text-indigo-700 text-xs font-semibold capitalize ring-1 ring-indigo-200">
                             {pass.pass_type}
                           </span>
                         </td>
@@ -296,7 +290,7 @@ const ViewPass = () => {
                             {isEligibleForExtension && (
                               <button
                                 onClick={() => setShowConvertModal(true)}
-                                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-md hover:bg-indigo-100 hover:text-indigo-800 transition-colors whitespace-nowrap ring-1 ring-indigo-200"
+                                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-[2.42px] hover:bg-indigo-100 hover:text-indigo-800 transition-colors whitespace-nowrap ring-1 ring-indigo-200"
                               >
                                 Extend to Leave
                               </button>
@@ -307,7 +301,7 @@ const ViewPass = () => {
                                   setExtendPassId(pass.pass_id);
                                   setShowExtendModal(true);
                                 }}
-                                className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-md hover:bg-purple-100 hover:text-purple-800 transition-colors whitespace-nowrap ring-1 ring-purple-200"
+                                className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-[2.42px] hover:bg-purple-100 hover:text-purple-800 transition-colors whitespace-nowrap ring-1 ring-purple-200"
                               >
                                 Extend Date
                               </button>
@@ -319,7 +313,82 @@ const ViewPass = () => {
                   })}
                 </tbody>
               </table>
+
             </div>
+            {/* Mobile View */}
+            <div className="md:hidden flex flex-col divide-y divide-slate-100">
+              {passes.slice().sort((a, b) => new Date(b.leave_start) - new Date(a.leave_start)).map((pass, idx) => {
+                const given = getLocalDDMMYYY(pass.leave_start);
+                const passEndDate = getLocalDDMMYYY(pass.leave_end);
+                const isCheckedIn = pass.logs && pass.logs.length > 0 && pass.logs[0].student_status === 'in';
+                const isEligibleForExtension = idx === 0 && pass.pass_type === 'market' && pass.pass_status !== 'rejected' && !isCheckedIn;
+                const isEligibleForExtend = pass.pass_type === 'leave' && (pass.pass_status === 'approved' || pass.pass_status === 'pending') && passEndDate >= todayDisplay && !isCheckedIn;
+                const isExpanded = expandedPassId === pass.pass_id;
+
+                return (
+                  <div key={pass.pass_id || idx} className="flex flex-col p-4 bg-white hover:bg-slate-50 transition-colors">
+                    <div 
+                      className="flex justify-between items-center cursor-pointer"
+                      onClick={() => setExpandedPassId(isExpanded ? null : pass.pass_id)}
+                    >
+                      <div className="flex gap-4 items-center">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-[7.27px] bg-indigo-50 text-indigo-700 text-xs font-semibold capitalize ring-1 ring-indigo-200">
+                          {pass.pass_type}
+                        </span>
+                        <StatusBadge status={pass.pass_status} />
+                      </div>
+                      <div className="flex items-center gap-1 text-slate-500 font-medium text-sm">
+                        <span>Info</span>
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </div>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Start Date</span>
+                          <span className="font-medium text-slate-700">{given}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">End Date</span>
+                          <span className="font-medium text-slate-700">{given === passEndDate ? '-' : passEndDate}</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-slate-500">Remarks</span>
+                          <span className="text-slate-700">{pass.remark || <span className="italic text-slate-400">No remarks</span>}</span>
+                        </div>
+                        {(isEligibleForExtension || isEligibleForExtend) && (
+                          <div className="flex justify-end gap-2 mt-2">
+                            {isEligibleForExtension && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setShowConvertModal(true); }}
+                                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-[7.27px] hover:bg-indigo-100 ring-1 ring-indigo-200"
+                              >
+                                Extend to Leave
+                              </button>
+                            )}
+                            {isEligibleForExtend && (
+                              <button
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setExtendPassId(pass.pass_id);
+                                  setShowExtendModal(true); 
+                                }}
+                                className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-[7.27px] hover:bg-purple-100 ring-1 ring-purple-200"
+                              >
+                                Extend Date
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+            </div>
+            </>
           )}
         </div>
       </main>
@@ -327,7 +396,7 @@ const ViewPass = () => {
       {/* Convert to Leave Modal */}
       {showConvertModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[2.42px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Extend to Leave Pass</h3>
             <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               This will upgrade your current market pass into a Leave Pass. The new return date requires warden approval.
@@ -342,7 +411,7 @@ const ViewPass = () => {
                 value={newEndDate}
                 onChange={(e) => setNewEndDate(e.target.value)}
                 min={todayHtml} 
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-700 bg-slate-50"
+                className="w-full px-4 py-2.5 rounded-[2.42px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-700 bg-slate-50"
               />
             </div>
 
@@ -353,14 +422,14 @@ const ViewPass = () => {
                   setNewEndDate(''); 
                 }}
                 disabled={isConverting}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[2.42px] transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleConvertPass}
                 disabled={isConverting || !newEndDate}
-                className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-[2.42px] hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
               >
                 {isConverting ? (
                   <>
@@ -382,14 +451,14 @@ const ViewPass = () => {
       {/* Extend Leave Pass Modal */}
       {showExtendModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[2.42px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Extend Leave Pass</h3>
             <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               Select your new expected return date. Your pass will return to "Pending" status until approved by the warden.
             </p>
 
             {extendError && (
-              <div className="mb-5 p-3.5 rounded-lg bg-rose-50 text-rose-700 text-sm font-medium border border-rose-100 flex items-start gap-2.5">
+              <div className="mb-5 p-3.5 rounded-[2.42px] bg-rose-50 text-rose-700 text-sm font-medium border border-rose-100 flex items-start gap-2.5">
                 <svg className="w-5 h-5 shrink-0 text-rose-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -409,7 +478,7 @@ const ViewPass = () => {
                   setExtendError('');
                 }}
                 min={minExtensionDate} 
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-slate-700 bg-slate-50"
+                className="w-full px-4 py-2.5 rounded-[2.42px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-slate-700 bg-slate-50"
               />
             </div>
 
@@ -422,14 +491,14 @@ const ViewPass = () => {
                   setExtendError('');
                 }}
                 disabled={isExtending}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[2.42px] transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleExtendPass}
                 disabled={isExtending || !extendDate}
-                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-[2.42px] hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
               >
                 {isExtending ? (
                   <>
