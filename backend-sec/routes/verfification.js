@@ -82,8 +82,6 @@ const verifyPassLogic = async (collegeId) => {
         // Remove leading slashes
         cleanPath = cleanPath.replace(/^\/+/, '');
         
-        console.log(`[Supabase] Requesting signed URL for path: "${cleanPath}"`);
-        
         const { data, error } = await supabase.storage
           .from('student-photos')
           .createSignedUrl(cleanPath, 60);
