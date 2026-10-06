@@ -1,3 +1,4 @@
+import { LogOut, ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -13,6 +14,7 @@ const ApprovalPage = () => {
 
   const [viewMode, setViewMode] = useState('pending');
   const [latePasses] = useState([]);
+  const [expandedPassId, setExpandedPassId] = useState(null);
 
   const [remarks, setRemarks] = useState({});
   const [attendance] = useState(85);
@@ -100,13 +102,6 @@ const ApprovalPage = () => {
       <header className="sticky top-0 z-20 bg-[#10162F] text-white shadow-lg border-b border-indigo-950/50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center transition-all duration-300">
           <div className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-default">
-            <span 
-              className="text-2xl font-bold text-white tracking-wider leading-none drop-shadow-md" 
-              style={{ fontFamily: "'Times New Roman', Times, serif" }}
-            >
-              IMSEC
-            </span>
-            <span className="text-2xl text-[#00A9E8] font-light leading-none">|</span>
             <img
               src="/digipass logo lateral.png"
               alt="DigiPass Logo"
@@ -119,12 +114,10 @@ const ApprovalPage = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="group h-10 px-4 text-xs font-semibold rounded-xl bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2 active:scale-95"
+            className="group h-10 px-4 text-xs font-semibold rounded-[2.42px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2 active:scale-95"
           >
-            <span>Logout</span>
-            <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a2 2 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <span className="hidden sm:inline">Logout</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
@@ -138,10 +131,10 @@ const ApprovalPage = () => {
           
           <div className="flex items-center gap-4">
             {/* Tabs */}
-            <div className="flex bg-slate-200/60 p-1 rounded-xl ring-1 ring-slate-200 shadow-inner">
+            <div className="flex bg-slate-200/60 p-1 rounded-[2.42px] ring-1 ring-slate-200 shadow-inner">
               <button
                 onClick={() => setViewMode('pending')}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-[2.42px] transition-all duration-300 ${
                   viewMode === 'pending' 
                   ? 'bg-white text-indigo-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -154,7 +147,7 @@ const ApprovalPage = () => {
               </button>
               <button
                 onClick={() => setViewMode('late')}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-[2.42px] transition-all duration-300 ${
                   viewMode === 'late' 
                   ? 'bg-white text-rose-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -166,18 +159,18 @@ const ApprovalPage = () => {
 
             <button
               onClick={viewMode === 'pending' ? loadPendingPasses : loadLatePasses}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-[2.42px] bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 shadow-sm"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
 
         {/* Table Container */}
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden transition-all duration-500">
+        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden transition-all duration-500">
           {loading ? (
             <div className="p-16 flex flex-col items-center justify-center gap-3 text-slate-500 animate-pulse">
               <svg className="w-8 h-8 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24">
@@ -187,7 +180,8 @@ const ApprovalPage = () => {
               <p className="text-sm font-medium">Loading data…</p>
             </div>
           ) : displayData && displayData.length > 0 ? (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50/80 border-b border-slate-200">
@@ -228,7 +222,7 @@ const ApprovalPage = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold capitalize ring-1 shadow-sm ${pass.pass_type === 'market' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-indigo-50 text-indigo-700 ring-indigo-200'}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-[2.42px] text-xs font-bold capitalize ring-1 shadow-sm ${pass.pass_type === 'market' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-indigo-50 text-indigo-700 ring-indigo-200'}`}>
                             {pass.pass_type}
                           </span>
                         </td>
@@ -248,7 +242,7 @@ const ApprovalPage = () => {
                                 value={remarks[pass.pass_id] || ''}
                                 onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
                                 disabled={isActed}
-                                className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 disabled:bg-slate-50 disabled:text-slate-400 transition-all duration-300 shadow-sm"
+                                className="w-full text-xs px-3 py-2 rounded-[2.42px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 disabled:bg-slate-50 disabled:text-slate-400 transition-all duration-300 shadow-sm"
                               />
                             </td>
                             <td className="px-6 py-4">
@@ -262,13 +256,13 @@ const ApprovalPage = () => {
                                 <div className="flex gap-2 justify-end">
                                   <button
                                     onClick={() => handleApprove(pass.pass_id)}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[2.42px] bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
                                   >
                                     Approve
                                   </button>
                                   <button
                                     onClick={() => handleReject(pass.pass_id)}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold shadow-sm transition-all duration-300 active:scale-95"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[2.42px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold shadow-sm transition-all duration-300 active:scale-95"
                                   >
                                     Reject
                                   </button>
@@ -290,11 +284,11 @@ const ApprovalPage = () => {
                                   placeholder="Disciplinary note..."
                                   value={remarks[pass.pass_id] || ''}
                                   onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
-                                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 transition-all shadow-sm"
+                                  className="w-full text-xs px-3 py-2 rounded-[2.42px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 transition-all shadow-sm"
                                 />
                                 <button
                                   onClick={() => handleSaveLateRemark(pass.pass_id)}
-                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 active:scale-95 shadow-sm"
+                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-[2.42px] border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 active:scale-95 shadow-sm"
                                 >
                                   Save
                                 </button>
@@ -315,7 +309,127 @@ const ApprovalPage = () => {
                   })}
                 </tbody>
               </table>
+
             </div>
+            {/* Mobile View */}
+            <div className="md:hidden flex flex-col divide-y divide-slate-100">
+              {displayData.map((pass, idx) => {
+                const isActed = pass.pass_status && ['approved', 'rejected'].includes(pass.pass_status.toLowerCase());
+                const isExpanded = expandedPassId === pass.pass_id;
+
+                return (
+                  <div key={pass.pass_id || idx} className="flex flex-col p-4 bg-white hover:bg-slate-50 transition-colors">
+                    <div 
+                      className="flex justify-between items-center cursor-pointer"
+                      onClick={() => setExpandedPassId(isExpanded ? null : pass.pass_id)}
+                    >
+                      <div className="flex gap-4 items-center">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs font-bold flex items-center justify-center shadow-inner ring-2 ring-white">
+                          {(pass.college_id || '?').slice(-2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-900">
+                            {pass.college?.first_name ? `${pass.college.first_name} ${pass.college.last_name}` : pass.college_id}
+                          </p>
+                          <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-[7.27px] text-[10px] font-bold capitalize ring-1 shadow-sm ${pass.pass_type === 'market' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-indigo-50 text-indigo-700 ring-indigo-200'}`}>
+                            {pass.pass_type}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-slate-500 font-medium text-sm">
+                        <span>Info</span>
+                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </div>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3 text-sm">
+                        {viewMode === 'pending' ? (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Attendance</span>
+                              <span className={`font-bold ${attendance < 75 ? 'text-rose-600' : 'text-emerald-600'}`}>{attendance}%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Date</span>
+                              <span className="font-medium text-slate-700">{getLocalDDMMYYY(pass.leave_start)}</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-slate-500">Remark</span>
+                              <input 
+                                type="text"
+                                placeholder="Add remark..."
+                                value={remarks[pass.pass_id] || ''}
+                                onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
+                                disabled={isActed}
+                                className="w-full text-xs px-3 py-2 rounded-[9.7px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 disabled:bg-slate-50 transition-all shadow-sm"
+                              />
+                            </div>
+                            <div className="mt-2">
+                              {isActed ? (
+                                <div className="flex justify-end">
+                                  <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm ${pass.pass_status === 'approved' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200'}`}>
+                                    {pass.pass_status.toUpperCase()}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="flex gap-2 justify-end">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleApprove(pass.pass_id); }}
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[9.7px] bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm"
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleReject(pass.pass_id); }}
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[9.7px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold shadow-sm"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Check-In Time</span>
+                              <span className="font-bold text-rose-600">{pass.logs && pass.logs.length > 0 ? formatISTTime(pass.logs[0].scan_time) : 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">Status</span>
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] tracking-wide font-bold bg-rose-50 text-rose-700 ring-1 ring-rose-200 uppercase">
+                                Rule Violation
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1 mt-2">
+                              <span className="text-slate-500">Disciplinary note</span>
+                              <div className="flex gap-2">
+                                <input 
+                                  type="text"
+                                  placeholder="Disciplinary note..."
+                                  value={remarks[pass.pass_id] || ''}
+                                  onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
+                                  className="w-full text-xs px-3 py-2 rounded-[9.7px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 shadow-sm"
+                                />
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleSaveLateRemark(pass.pass_id); }}
+                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-[9.7px] border border-slate-200 hover:bg-slate-200 hover:text-slate-900 shadow-sm"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+            </div>
+            </>
           ) : (
             <div className="p-16 flex flex-col items-center justify-center text-center animate-fade-in">
               {viewMode === 'pending' ? (
