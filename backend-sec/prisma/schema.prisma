@@ -61,6 +61,7 @@ model User {
   role            Role
   contact_details String?     @db.VarChar(50)
   parent_email    String?     @db.VarChar(100) // Added for notifications
+  parents_phone   String      @db.VarChar(10)
   
   is_active Boolean @default(true)
 

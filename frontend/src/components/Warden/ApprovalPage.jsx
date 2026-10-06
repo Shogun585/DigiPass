@@ -9,7 +9,8 @@ const ApprovalPage = () => {
   const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [pendingPasses, setPendingPasses] = useState([]);
-  const { updatePassStatus, getPendingPasses, getLateReturns, addPassRemark } = usePass();
+  const [latePasses, setLatePasses] = useState([]);
+  const { updatePassStatus, getPendingPasses, getLateReturns, addPassRemark, getAllLogs } = usePass();
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState('pending');
@@ -19,27 +20,60 @@ const ApprovalPage = () => {
   const [remarks, setRemarks] = useState({});
   const [attendance] = useState(85);
 
+  const [logs, setLogs] = useState([]);
+  const [logFilter, setLogFilter] = useState('all');  
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     if(viewMode === 'pending'){
-      loadPendingPasses()
-    }
-    if(viewMode === 'late'){
+      loadPendingPasses(false);
+    } else if(viewMode === 'late'){
       loadLatePasses();
+    } else if(viewMode === 'logs'){
+      loadLogs(currentPage, false); 
     }
-  }, [viewMode]); // Added viewMode as dependency so it re-fetches when toggled
+    const intervalId = setInterval(() => {
+      if (viewMode === 'pending') {
+        loadPendingPasses(true);
+      } else if (viewMode === 'logs') {
+        loadLogs(currentPage, true);
+      }
+    }, 15000);
 
-  const loadPendingPasses = async () => {
-    setLoading(true);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [viewMode, currentPage]);
+
+  const loadPendingPasses = async (isBackgroundRefresh = false) => {
+    if (!isBackgroundRefresh) setLoading(true);
+    
     const passes = await getPendingPasses();
     setPendingPasses(passes || []);
-    setLoading(false);
+    
+    if (!isBackgroundRefresh) setLoading(false);
   };
 
   const loadLatePasses = async () => {
     setLoading(true);
     const passes = await getLateReturns();
-    setPendingPasses(passes || []);
+    setLatePasses(passes || []);
     setLoading(false);
+  };
+
+  const loadLogs = async (page = 1, isBackgroundRefresh = false) => {
+
+    if (!isBackgroundRefresh) setLoading(true);
+    
+    const data = await getAllLogs(page, 20); 
+    
+    setLogs(data.logs || []);
+    setTotalPages(data.totalPages || 1);
+    setCurrentPage(data.currentPage || 1);
+    
+    if (!isBackgroundRefresh) setLoading(false);
   };
 
   const handleRemarkChange = (passId, value) => {
@@ -93,7 +127,15 @@ const ApprovalPage = () => {
     });
   };
 
-  const displayData = viewMode === 'pending' ? pendingPasses : latePasses;
+  let displayData = [];
+  if (viewMode === 'pending') displayData = pendingPasses;
+  if (viewMode === 'late') displayData = latePasses;
+  if (viewMode === 'logs') {
+    displayData = logs.filter(log => {
+      if (logFilter === 'all') return true;
+      return log.action === logFilter;
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
@@ -129,12 +171,12 @@ const ApprovalPage = () => {
             <p className="text-sm text-slate-500 mt-1">Review requests and monitor late market returns.</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            {/* Tabs */}
-            <div className="flex bg-slate-200/60 p-1 rounded-[3.19px] ring-1 ring-slate-200 shadow-inner">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* View Mode Tabs */}
+            <div className="flex bg-slate-100 p-1 rounded-lg ring-1 ring-slate-200 overflow-x-auto">
               <button
                 onClick={() => setViewMode('pending')}
-                className={`px-4 py-2 text-sm font-semibold rounded-[3.19px] transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
                   viewMode === 'pending' 
                   ? 'bg-white text-indigo-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -147,19 +189,34 @@ const ApprovalPage = () => {
               </button>
               <button
                 onClick={() => setViewMode('late')}
-                className={`px-4 py-2 text-sm font-semibold rounded-[3.19px] transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
                   viewMode === 'late' 
                   ? 'bg-white text-rose-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
                 }`}
               >
-                Late Returns (&gt; 9 PM)
+                Late Returns
+              </button>
+              <button
+                onClick={() => setViewMode('logs')}
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
+                  viewMode === 'logs' 
+                  ? 'bg-white text-emerald-700 shadow-sm' 
+                  : 'text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                Activity Logs
               </button>
             </div>
 
+            {/* Refresh Button */}
             <button
-              onClick={viewMode === 'pending' ? loadPendingPasses : loadLatePasses}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-[3.19px] bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 shadow-sm"
+              onClick={() => {
+                if(viewMode === 'pending') loadPendingPasses();
+                if(viewMode === 'late') loadLatePasses();
+                if(viewMode === 'logs') loadLogs(currentPage);
+              }}
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition shadow-sm"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -169,8 +226,26 @@ const ApprovalPage = () => {
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden transition-all duration-500">
+        {/* Filters for Logs View */}
+        {viewMode === 'logs' && (
+          <div className="mb-4 flex gap-2">
+            {['all', 'checked_out', 'checked_in'].map(filter => (
+              <button
+                key={filter}
+                onClick={() => setLogFilter(filter)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors ${
+                  logFilter === filter 
+                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700' 
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {filter === 'all' ? 'All Activity' : filter.replace('_', ' ').toUpperCase()}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
           {loading ? (
             <div className="p-16 flex flex-col items-center justify-center gap-3 text-slate-500 animate-pulse">
               <svg className="w-8 h-8 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24">
@@ -184,26 +259,73 @@ const ApprovalPage = () => {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200">
-                    <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Student</th>
-                    <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Pass Type</th>
-                    {viewMode === 'pending' ? (
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    {viewMode === 'logs' ? (
                       <>
-                        <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Attendance</th>
-                        <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Date</th>
-                        <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Remark</th>
-                        <th className="text-right font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Action</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Scan ID</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Student & Pass</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Guard / Staff</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Action</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Status</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Scan Time</th>
                       </>
                     ) : (
                       <>
-                        <th className="text-left font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Check-In Time</th>
-                        <th className="text-right font-semibold text-slate-600 uppercase tracking-wider text-xs px-6 py-4">Status</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Student</th>
+                        <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Pass Type</th>
+                        {viewMode === 'pending' ? (
+                          <>
+                            <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Attendance</th>
+                            <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Date</th>
+                            <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Remark</th>
+                            <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Action</th>
+                            <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Parent's Contact</th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="text-left font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Check-In Time</th>
+                            <th className="text-right font-medium text-slate-600 uppercase tracking-wider text-xs px-6 py-3">Status</th>
+                          </>
+                        )}
                       </>
                     )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {displayData.map((pass, idx) => {
+                  {displayData.map((item, idx) => {
+                    
+                    if (viewMode === 'logs') {
+                      const log = item;
+                      const student = log.leave_pass?.college;
+                      return (
+                        <tr key={log.scan_id || idx} className="hover:bg-slate-50/60 transition">
+                          <td className="px-6 py-4 font-mono text-xs text-slate-500">#{log.scan_id}</td>
+                          <td className="px-6 py-4">
+                            <p className="font-medium text-slate-900">{student ? `${student.first_name} ${student.last_name}` : 'Unknown'}</p>
+                            <p className="text-xs text-slate-500">ID: {student?.id || 'N/A'} • Pass #{log.pass_id}</p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="text-sm text-slate-700">{log.staff ? `${log.staff.first_name} ${log.staff.last_name}` : log.staff_id}</p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                              log.action === 'checked_in' ? 'bg-emerald-100 text-emerald-700' :
+                              log.action === 'checked_out' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700'
+                            }`}>
+                              {log.action.replace('_', ' ').toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs font-medium text-slate-600 capitalize">{log.student_status}</span>
+                          </td>
+                          <td className="px-6 py-4 text-xs text-slate-500">
+                            {formatISTTime(log.scan_time)}
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    const pass = item;
                     const isActed = pass.pass_status && ['approved', 'rejected'].includes(pass.pass_status.toLowerCase());
                     
                     return (
@@ -226,15 +348,15 @@ const ApprovalPage = () => {
                             {pass.pass_type}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-center">
-                          <span className={`font-bold ${attendance < 75 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                            {attendance}%
-                          </span>
-                        </td>
-
+                        
                         {viewMode === 'pending' && (
                           <>
-                            <td className="px-6 py-4 font-medium text-slate-700">{getLocalDDMMYYY(pass.leave_start)}</td>
+                            <td className="px-4 py-4 text-center">
+                              <span className={`font-semibold ${attendance < 75 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                                {attendance}%
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-slate-700">{getLocalDDMMYYY(pass.leave_start)}</td>
                             <td className="px-4 py-4">
                               <input 
                                 type="text"
@@ -269,6 +391,28 @@ const ApprovalPage = () => {
                                 </div>
                               )}
                             </td>
+                            <td className='px-6 py-4'>
+                              {pass.pass_type === 'leave' ? (
+                                <div className="flex items-center justify-center">
+                                  <span className="hidden sm:block text-sm font-medium text-slate-900">
+                                    {pass.college?.parents_phone || 'Not Provided'}
+                                  </span>
+                                  {pass.college?.parents_phone ? (
+                                    <a 
+                                      href={`tel:${pass.college.parents_phone}`}
+                                      className="sm:hidden inline-flex items-start gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 ring-1 ring-indigo-200 transition-colors"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                      </svg>
+                                      <span className="text-xs font-bold">Dial</span>
+                                    </a>
+                                  ) : (
+                                    <span className="sm:hidden text-xs text-slate-400 italic">Not Provided</span>
+                                  )}
+                                </div>  
+                              ) : ('-')}
+                            </td>
                           </>
                         )}
 
@@ -284,11 +428,11 @@ const ApprovalPage = () => {
                                   placeholder="Disciplinary note..."
                                   value={remarks[pass.pass_id] || ''}
                                   onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
-                                  className="w-full text-xs px-3 py-2 rounded-[3.19px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 transition-all shadow-sm"
+                                  className="w-full text-xs px-3 py-1.5 rounded border border-slate-200 focus:outline-none focus:ring-1 focus:ring-rose-500"
                                 />
                                 <button
                                   onClick={() => handleSaveLateRemark(pass.pass_id)}
-                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-[3.19px] border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 active:scale-95 shadow-sm"
+                                  className="px-2.5 py-1.5 bg-slate-100 text-slate-700 text-xs font-medium rounded hover:bg-slate-200 transition"
                                 >
                                   Save
                                 </button>
@@ -431,28 +575,41 @@ const ApprovalPage = () => {
             </div>
             </>
           ) : (
-            <div className="p-16 flex flex-col items-center justify-center text-center animate-fade-in">
-              {viewMode === 'pending' ? (
-                <>
-                  <div className="w-16 h-16 rounded-full bg-emerald-50 ring-4 ring-emerald-50 flex items-center justify-center mb-4 shadow-sm">
-                    <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900">All caught up</h3>
-                  <p className="text-sm font-medium text-slate-500 mt-1">No pending pass requests right now.</p>
-                </>
-              ) : (
-                <>
-                  <div className="w-16 h-16 rounded-full bg-indigo-50 ring-4 ring-indigo-50 flex items-center justify-center mb-4 shadow-sm">
-                    <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900">Hostel is secure</h3>
-                  <p className="text-sm font-medium text-slate-500 mt-1">No students checked in after 9 PM today.</p>
-                </>
-              )}
+            <div className="p-16 flex flex-col items-center justify-center text-center">
+              <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+                <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-slate-900">No records found</h3>
+              <p className="text-sm text-slate-500 mt-1">
+                {viewMode === 'logs' ? 'No activity logs match the current filter.' : 'You are all caught up.'}
+              </p>
+            </div>
+          )}
+
+          {/* Pagination Footer Controls; renders for Activity Logs*/}
+          {viewMode === 'logs' && totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 bg-slate-50">
+              <span className="text-sm text-slate-500">
+                Page <span className="font-medium text-slate-900">{currentPage}</span> of <span className="font-medium text-slate-900">{totalPages}</span>
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-sm font-medium rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-sm font-medium rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-600 transition"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
