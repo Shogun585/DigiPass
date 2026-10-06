@@ -102,7 +102,7 @@ const VerificationPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
-      <header className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white shadow-lg">
+      <header className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 to-slate-900/80 text-white shadow-lg">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src="/digipass logo lateral.png" alt="DigiPass Logo" className="h-14 w-auto object-contain" />
@@ -112,7 +112,7 @@ const VerificationPage = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[2.42px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[3.19px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
           >
             <span className="hidden sm:inline">Logout</span>
             <LogOut className="w-4 h-4" />
@@ -126,12 +126,12 @@ const VerificationPage = () => {
           <p className="text-sm text-slate-500 mt-1">Enter a college ID or scan a barcode to confirm a valid pass.</p>
         </div>
 
-        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
           {/* Mode tabs */}
-          <div className="p-1.5 m-4 mb-0 bg-slate-100 rounded-[2.42px] grid grid-cols-2 gap-1">
+          <div className="p-1.5 m-4 mb-0 bg-slate-100 rounded-[3.19px] grid grid-cols-2 gap-1">
             <button
               onClick={() => setScanMode('manual')}
-              className={`py-2 text-sm font-medium rounded-[2.42px] transition ${
+              className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
                 scanMode === 'manual' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -139,7 +139,7 @@ const VerificationPage = () => {
             </button>
             <button
               onClick={() => setScanMode('scan')}
-              className={`py-2 text-sm font-medium rounded-[2.42px] transition ${
+              className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
                 scanMode === 'scan' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -165,7 +165,7 @@ const VerificationPage = () => {
                       placeholder="e.g., AXXXXCS1234"
                       required
                       disabled={loading}
-                      className="w-full pl-10 pr-3 py-2.5 rounded-[2.42px] border border-slate-300 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 disabled:bg-slate-50"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-[3.19px] bg-slate-100 border border-slate-400 shadow-inner shadow-slate-300/50 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 disabled:bg-slate-200"
                     />
                   </div>
                 </div>
@@ -175,7 +175,7 @@ const VerificationPage = () => {
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="px-5 py-2.5 rounded-[2.42px] border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition"
+                      className="px-5 py-2.5 rounded-[3.19px] border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition"
                     >
                       Reset
                     </button>
@@ -183,7 +183,7 @@ const VerificationPage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[2.42px] bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-60 transition"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[3.19px] bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-60 transition"
                   >
                     {loading && (
                       <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -217,7 +217,7 @@ const VerificationPage = () => {
             {verificationResult && (
               <div className="mt-6">
                 {verificationResult.valid ? (
-                  <div className="rounded-[2.42px] border border-emerald-200 bg-emerald-50/50 p-5">
+                  <div className="rounded-[3.19px] border border-emerald-200 bg-emerald-50/50 p-5">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -231,7 +231,7 @@ const VerificationPage = () => {
                     </div>
 
                     {verificationResult?.user_details && (
-                      <div className="bg-white rounded-[2.42px] p-4 mb-3 ring-1 ring-slate-200">
+                      <div className="bg-white rounded-[3.19px] p-4 mb-3 ring-1 ring-slate-200">
                         <h4 className="text-sm font-semibold text-slate-900 mb-2">Student Information</h4>
                         <Row label="Name">
                           {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
@@ -244,7 +244,7 @@ const VerificationPage = () => {
                     )}
 
                     {verificationResult?.pass_details && (
-                      <div className="bg-white rounded-[2.42px] p-4 ring-1 ring-slate-200">
+                      <div className="bg-white rounded-[3.19px] p-4 ring-1 ring-slate-200">
                         <h4 className="text-sm font-semibold text-slate-900 mb-2">Pass Details</h4>
                         <Row label="Pass Type">
                           <span className="inline-flex items-center px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-xs font-semibold ring-1 ring-indigo-100">
@@ -270,7 +270,7 @@ const VerificationPage = () => {
                         <h4 className="text-sm font-semibold text-slate-900 mb-3">Guard Actions</h4>
                         
                         {actionMessage ? (
-                          <div className={`p-3 rounded-[2.42px] text-sm font-medium ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                          <div className={`p-3 rounded-[3.19px] text-sm font-medium ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
                             {actionMessage.text}
                           </div>
                         ) : ( () => {
@@ -283,7 +283,7 @@ const VerificationPage = () => {
                                 <button
                                   onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
                                   disabled={actionLoading}
-                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[2.42px] bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[3.19px] bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
                                 >
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                                   Check OUT Student
@@ -292,7 +292,7 @@ const VerificationPage = () => {
                                 <button
                                   onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
                                   disabled={actionLoading}
-                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[2.42px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[3.19px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
                                 >
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
                                   Check IN Student
@@ -311,7 +311,7 @@ const VerificationPage = () => {
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-[2.42px] border border-rose-200 bg-rose-50/60 p-5">
+                  <div className="rounded-[3.19px] border border-rose-200 bg-rose-50/60 p-5">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -325,7 +325,7 @@ const VerificationPage = () => {
                     </div>
 
                     {verificationResult?.user_details && (
-                      <div className="bg-white rounded-[2.42px] p-4 ring-1 ring-slate-200">
+                      <div className="bg-white rounded-[3.19px] p-4 ring-1 ring-slate-200">
                         <p className="text-sm text-slate-700">
                           User found:{' '}
                           <span className="font-medium text-slate-900">

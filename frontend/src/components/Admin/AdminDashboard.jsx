@@ -130,7 +130,7 @@ const AdminDashboard = () => {
       <header className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white shadow-lg">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[2.42px] bg-white/10 backdrop-blur flex items-center justify-center ring-1 ring-white/20">
+            <div className="w-10 h-10 rounded-[3.19px] bg-white/10 backdrop-blur flex items-center justify-center ring-1 ring-white/20">
               <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
@@ -142,7 +142,7 @@ const AdminDashboard = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[2.42px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[3.19px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
           >
             <span className="hidden sm:inline">Logout</span>
             <LogOut className="w-4 h-4" />
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
         
         {/* FEEDBACK TOAST */}
         {feedback.message && (
-          <div className={`mb-6 p-4 rounded-[2.42px] flex items-start gap-3 border shadow-sm ${
+          <div className={`mb-6 p-4 rounded-[3.19px] flex items-start gap-3 border shadow-sm ${
             feedback.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'
           }`}>
             <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
           
           {/* TABS */}
           <div className="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">
@@ -227,7 +227,7 @@ const AdminDashboard = () => {
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                <button disabled={loading} type="submit" className="w-full py-3 mt-4 bg-indigo-600 text-white font-semibold rounded-[2.42px] hover:bg-indigo-700 disabled:opacity-50 transition">
+                <button disabled={loading} type="submit" className="w-full py-3 mt-4 bg-indigo-600 text-white font-semibold rounded-[3.19px] hover:bg-indigo-700 disabled:opacity-50 transition">
                   {loading ? 'Creating...' : 'Create User'}
                 </button>
               </form>
@@ -247,35 +247,35 @@ const AdminDashboard = () => {
                 </div>
 
                 <form onSubmit={handleBulkSubmit} className="mb-8">
-                  <div className="border-2 border-dashed border-slate-300 rounded-[2.42px] p-8 text-center hover:bg-slate-50 transition">
+                  <div className="border-2 border-dashed border-slate-300 rounded-[3.19px] p-8 text-center hover:bg-slate-50 transition">
                     <input type="file" accept=".csv" ref={fileInputRef} onChange={e => setCsvFile(e.target.files[0])} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer" />
                   </div>
-                  <button disabled={loading || !csvFile} type="submit" className="w-full py-3 mt-4 bg-indigo-600 text-white font-semibold rounded-[2.42px] hover:bg-indigo-700 disabled:opacity-50 transition">
+                  <button disabled={loading || !csvFile} type="submit" className="w-full py-3 mt-4 bg-indigo-600 text-white font-semibold rounded-[3.19px] hover:bg-indigo-700 disabled:opacity-50 transition">
                     {loading ? 'Processing File...' : 'Upload & Process'}
                   </button>
                 </form>
 
                 {/* Bulk Results Display */}
                 {bulkResults && (
-                  <div className="bg-slate-50 border border-slate-200 rounded-[2.42px] p-6">
+                  <div className="bg-slate-50 border border-slate-200 rounded-[3.19px] p-6">
                     <h3 className="font-bold text-slate-900 mb-4">Upload Summary</h3>
                     <div className="grid grid-cols-3 gap-4 text-center mb-6">
-                      <div className="bg-white p-3 rounded-[2.42px] border shadow-sm">
+                      <div className="bg-white p-3 rounded-[3.19px] border shadow-sm">
                         <p className="text-2xl font-bold text-slate-700">{bulkResults.total_processed}</p>
                         <p className="text-xs text-slate-500 uppercase">Processed</p>
                       </div>
-                      <div className="bg-white p-3 rounded-[2.42px] border shadow-sm border-emerald-200">
+                      <div className="bg-white p-3 rounded-[3.19px] border shadow-sm border-emerald-200">
                         <p className="text-2xl font-bold text-emerald-600">{bulkResults.success_count}</p>
                         <p className="text-xs text-slate-500 uppercase">Created</p>
                       </div>
-                      <div className="bg-white p-3 rounded-[2.42px] border shadow-sm border-rose-200">
+                      <div className="bg-white p-3 rounded-[3.19px] border shadow-sm border-rose-200">
                         <p className="text-2xl font-bold text-rose-600">{bulkResults.failed_count}</p>
                         <p className="text-xs text-slate-500 uppercase">Failed</p>
                       </div>
                     </div>
                     
                     {bulkResults.success_count > 0 && (
-                      <button onClick={downloadPasswords} className="w-full py-2.5 mb-4 bg-emerald-600 text-white font-semibold rounded-[2.42px] hover:bg-emerald-700 transition flex items-center justify-center gap-2">
+                      <button onClick={downloadPasswords} className="w-full py-2.5 mb-4 bg-emerald-600 text-white font-semibold rounded-[3.19px] hover:bg-emerald-700 transition flex items-center justify-center gap-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         Download Default Passwords (CSV)
                       </button>
@@ -310,7 +310,7 @@ const AdminDashboard = () => {
                     <input type="text" value={manageId} onChange={e => setManageId(e.target.value.toUpperCase())} placeholder="Enter ID (e.g. A2023CS001)" className="w-full p-3 text-lg font-mono rounded border-2 border-slate-300 focus:border-slate-500 focus:outline-none uppercase" />
                   </div>
 
-                  <div className="bg-rose-50 border border-rose-200 rounded-[2.42px] p-5">
+                  <div className="bg-rose-50 border border-rose-200 rounded-[3.19px] p-5">
                     <h3 className="font-bold text-rose-900 mb-1">Danger Zone</h3>
                     <p className="text-xs text-rose-700 mb-4">Deactivating a user immediately revokes their login access, but preserves their pass history.</p>
                     <button disabled={loading || !manageId} onClick={handleDeactivate} className="px-4 py-2 bg-rose-600 text-white text-sm font-semibold rounded hover:bg-rose-700 disabled:opacity-50 transition">
@@ -318,7 +318,7 @@ const AdminDashboard = () => {
                     </button>
                   </div>
 
-                  <div className="bg-slate-50 border border-slate-200 rounded-[2.42px] p-5">
+                  <div className="bg-slate-50 border border-slate-200 rounded-[3.19px] p-5">
                     <h3 className="font-bold text-slate-900 mb-1">Force Password Reset</h3>
                     <p className="text-xs text-slate-500 mb-4">Set a new password for this user manually.</p>
                     <div className="flex gap-2">

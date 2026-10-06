@@ -166,7 +166,7 @@ const ViewPass = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="group h-10 px-4 text-xs font-semibold rounded-[2.42px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
+            className="group h-10 px-4 text-xs font-semibold rounded-[3.19px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
           >
             <span className="hidden sm:inline">Logout</span>
             <LogOut className="w-4 h-4" />
@@ -183,7 +183,7 @@ const ViewPass = () => {
           </div>
           <button
             onClick={() => navigate('/apply-pass')}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[2.42px] bg-indigo-600 text-white font-medium text-sm shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[3.19px] bg-indigo-600 text-white font-medium text-sm shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -199,7 +199,7 @@ const ViewPass = () => {
             { label: 'Pending', value: counts.pending, color: 'text-amber-600', bg: 'bg-amber-500' },
             { label: 'Rejected', value: counts.rejected, color: 'text-rose-600', bg: 'bg-rose-500' },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-[2.42px] ring-1 ring-slate-200 p-5 flex items-center gap-4 shadow-sm">
+            <div key={s.label} className="bg-white rounded-[3.19px] ring-1 ring-slate-200 p-5 flex items-center gap-4 shadow-sm">
               <div className={`w-2 h-12 rounded-full ${s.bg} opacity-80`} />
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{s.label}</p>
@@ -210,7 +210,7 @@ const ViewPass = () => {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
           {loading ? (
             <div className="p-20 flex flex-col items-center justify-center gap-4">
               <svg className="w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ const ViewPass = () => {
               <p className="text-slate-900 font-semibold">{error}</p>
               <button
                 onClick={fetchPasses}
-                className="mt-4 px-5 py-2 rounded-[2.42px] bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition"
+                className="mt-4 px-5 py-2 rounded-[3.19px] bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition"
               >
                 Try Again
               </button>
@@ -271,7 +271,7 @@ const ViewPass = () => {
                     return (
                       <tr key={pass.pass_id || idx} className="hover:bg-slate-50/50 transition-colors group">
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-[2.42px] bg-indigo-50 text-indigo-700 text-xs font-semibold capitalize ring-1 ring-indigo-200">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-[3.19px] bg-indigo-50 text-indigo-700 text-xs font-semibold capitalize ring-1 ring-indigo-200">
                             {pass.pass_type}
                           </span>
                         </td>
@@ -290,7 +290,7 @@ const ViewPass = () => {
                             {isEligibleForExtension && (
                               <button
                                 onClick={() => setShowConvertModal(true)}
-                                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-[2.42px] hover:bg-indigo-100 hover:text-indigo-800 transition-colors whitespace-nowrap ring-1 ring-indigo-200"
+                                className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-[3.19px] hover:bg-indigo-100 hover:text-indigo-800 transition-colors whitespace-nowrap ring-1 ring-indigo-200"
                               >
                                 Extend to Leave
                               </button>
@@ -301,7 +301,7 @@ const ViewPass = () => {
                                   setExtendPassId(pass.pass_id);
                                   setShowExtendModal(true);
                                 }}
-                                className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-[2.42px] hover:bg-purple-100 hover:text-purple-800 transition-colors whitespace-nowrap ring-1 ring-purple-200"
+                                className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-[3.19px] hover:bg-purple-100 hover:text-purple-800 transition-colors whitespace-nowrap ring-1 ring-purple-200"
                               >
                                 Extend Date
                               </button>
@@ -396,7 +396,7 @@ const ViewPass = () => {
       {/* Convert to Leave Modal */}
       {showConvertModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[2.42px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[3.19px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Extend to Leave Pass</h3>
             <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               This will upgrade your current market pass into a Leave Pass. The new return date requires warden approval.
@@ -411,7 +411,7 @@ const ViewPass = () => {
                 value={newEndDate}
                 onChange={(e) => setNewEndDate(e.target.value)}
                 min={todayHtml} 
-                className="w-full px-4 py-2.5 rounded-[2.42px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-700 bg-slate-50"
+                className="w-full px-4 py-2.5 rounded-[3.19px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-700 bg-slate-50"
               />
             </div>
 
@@ -422,14 +422,14 @@ const ViewPass = () => {
                   setNewEndDate(''); 
                 }}
                 disabled={isConverting}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[2.42px] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[3.19px] transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleConvertPass}
                 disabled={isConverting || !newEndDate}
-                className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-[2.42px] hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-[3.19px] hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
               >
                 {isConverting ? (
                   <>
@@ -451,14 +451,14 @@ const ViewPass = () => {
       {/* Extend Leave Pass Modal */}
       {showExtendModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[2.42px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[3.19px] shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <h3 className="text-xl font-bold text-slate-900 mb-2">Extend Leave Pass</h3>
             <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               Select your new expected return date. Your pass will return to "Pending" status until approved by the warden.
             </p>
 
             {extendError && (
-              <div className="mb-5 p-3.5 rounded-[2.42px] bg-rose-50 text-rose-700 text-sm font-medium border border-rose-100 flex items-start gap-2.5">
+              <div className="mb-5 p-3.5 rounded-[3.19px] bg-rose-50 text-rose-700 text-sm font-medium border border-rose-100 flex items-start gap-2.5">
                 <svg className="w-5 h-5 shrink-0 text-rose-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -478,7 +478,7 @@ const ViewPass = () => {
                   setExtendError('');
                 }}
                 min={minExtensionDate} 
-                className="w-full px-4 py-2.5 rounded-[2.42px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-slate-700 bg-slate-50"
+                className="w-full px-4 py-2.5 rounded-[3.19px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-slate-700 bg-slate-50"
               />
             </div>
 
@@ -491,14 +491,14 @@ const ViewPass = () => {
                   setExtendError('');
                 }}
                 disabled={isExtending}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[2.42px] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-[3.19px] transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleExtendPass}
                 disabled={isExtending || !extendDate}
-                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-[2.42px] hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-[3.19px] hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
               >
                 {isExtending ? (
                   <>

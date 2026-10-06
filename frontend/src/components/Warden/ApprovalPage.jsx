@@ -99,7 +99,7 @@ const ApprovalPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       
       {/* --- Standardized Header --- */}
-      <header className="sticky top-0 z-20 bg-[#10162F] text-white shadow-lg border-b border-indigo-950/50">
+      <header className="sticky top-0 z-20 bg-gradient-to-r from-[#10162F] to-[#10162F]/80 text-white shadow-lg border-b border-indigo-950/50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center transition-all duration-300">
           <div className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-default">
             <img
@@ -114,7 +114,7 @@ const ApprovalPage = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="group h-10 px-4 text-xs font-semibold rounded-[2.42px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2 active:scale-95"
+            className="group h-10 px-4 text-xs font-semibold rounded-[3.19px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2 active:scale-95"
           >
             <span className="hidden sm:inline">Logout</span>
             <LogOut className="w-4 h-4" />
@@ -131,10 +131,10 @@ const ApprovalPage = () => {
           
           <div className="flex items-center gap-4">
             {/* Tabs */}
-            <div className="flex bg-slate-200/60 p-1 rounded-[2.42px] ring-1 ring-slate-200 shadow-inner">
+            <div className="flex bg-slate-200/60 p-1 rounded-[3.19px] ring-1 ring-slate-200 shadow-inner">
               <button
                 onClick={() => setViewMode('pending')}
-                className={`px-4 py-2 text-sm font-semibold rounded-[2.42px] transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-[3.19px] transition-all duration-300 ${
                   viewMode === 'pending' 
                   ? 'bg-white text-indigo-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -147,7 +147,7 @@ const ApprovalPage = () => {
               </button>
               <button
                 onClick={() => setViewMode('late')}
-                className={`px-4 py-2 text-sm font-semibold rounded-[2.42px] transition-all duration-300 ${
+                className={`px-4 py-2 text-sm font-semibold rounded-[3.19px] transition-all duration-300 ${
                   viewMode === 'late' 
                   ? 'bg-white text-rose-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -159,7 +159,7 @@ const ApprovalPage = () => {
 
             <button
               onClick={viewMode === 'pending' ? loadPendingPasses : loadLatePasses}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-[2.42px] bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-[3.19px] bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 shadow-sm"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -170,7 +170,7 @@ const ApprovalPage = () => {
         </div>
 
         {/* Table Container */}
-        <div className="bg-white rounded-[2.42px] shadow-sm ring-1 ring-slate-200 overflow-hidden transition-all duration-500">
+        <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden transition-all duration-500">
           {loading ? (
             <div className="p-16 flex flex-col items-center justify-center gap-3 text-slate-500 animate-pulse">
               <svg className="w-8 h-8 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24">
@@ -222,7 +222,7 @@ const ApprovalPage = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-[2.42px] text-xs font-bold capitalize ring-1 shadow-sm ${pass.pass_type === 'market' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-indigo-50 text-indigo-700 ring-indigo-200'}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-[3.19px] text-xs font-bold capitalize ring-1 shadow-sm ${pass.pass_type === 'market' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-indigo-50 text-indigo-700 ring-indigo-200'}`}>
                             {pass.pass_type}
                           </span>
                         </td>
@@ -242,7 +242,7 @@ const ApprovalPage = () => {
                                 value={remarks[pass.pass_id] || ''}
                                 onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
                                 disabled={isActed}
-                                className="w-full text-xs px-3 py-2 rounded-[2.42px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 disabled:bg-slate-50 disabled:text-slate-400 transition-all duration-300 shadow-sm"
+                                className="w-full text-xs px-3 py-2 rounded-[3.19px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 disabled:bg-slate-50 disabled:text-slate-400 transition-all duration-300 shadow-sm"
                               />
                             </td>
                             <td className="px-6 py-4">
@@ -256,13 +256,13 @@ const ApprovalPage = () => {
                                 <div className="flex gap-2 justify-end">
                                   <button
                                     onClick={() => handleApprove(pass.pass_id)}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[2.42px] bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[3.19px] bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all duration-300 active:scale-95"
                                   >
                                     Approve
                                   </button>
                                   <button
                                     onClick={() => handleReject(pass.pass_id)}
-                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[2.42px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold shadow-sm transition-all duration-300 active:scale-95"
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[3.19px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold shadow-sm transition-all duration-300 active:scale-95"
                                   >
                                     Reject
                                   </button>
@@ -284,11 +284,11 @@ const ApprovalPage = () => {
                                   placeholder="Disciplinary note..."
                                   value={remarks[pass.pass_id] || ''}
                                   onChange={(e) => handleRemarkChange(pass.pass_id, e.target.value)}
-                                  className="w-full text-xs px-3 py-2 rounded-[2.42px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 transition-all shadow-sm"
+                                  className="w-full text-xs px-3 py-2 rounded-[3.19px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400 transition-all shadow-sm"
                                 />
                                 <button
                                   onClick={() => handleSaveLateRemark(pass.pass_id)}
-                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-[2.42px] border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 active:scale-95 shadow-sm"
+                                  className="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-[3.19px] border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all duration-200 active:scale-95 shadow-sm"
                                 >
                                   Save
                                 </button>
