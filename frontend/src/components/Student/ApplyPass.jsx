@@ -1,3 +1,4 @@
+import { LogOut } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -110,13 +111,6 @@ const ApplyPass = () => {
       <header className="sticky top-0 z-20 bg-[#10162F] text-white shadow-lg border-b border-indigo-950/50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center transition-all duration-300">
           <div className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-default">
-            <span 
-              className="text-2xl font-bold text-white tracking-wider leading-none drop-shadow-md" 
-              style={{ fontFamily: "'Times New Roman', Times, serif" }}
-            >
-              IMSEC
-            </span>
-            <span className="text-2xl text-[#00A9E8] font-light leading-none">|</span>
             <img
               src="/digipass logo lateral.png"
               alt="DigiPass Logo"
@@ -125,12 +119,10 @@ const ApplyPass = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="group h-10 px-4 text-xs font-semibold rounded-xl bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
+            className="group h-10 px-4 text-xs font-semibold rounded-[2.42px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
           >
-            <span>Logout</span>
-            <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <span className="hidden sm:inline">Logout</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
@@ -151,7 +143,7 @@ const ApplyPass = () => {
           </div>
           <button
             onClick={() => navigate('/view-pass')}
-            className="group inline-flex h-11 items-center gap-2 px-5 rounded-xl bg-white border border-slate-200 shadow-sm text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-[#00A9E8]/50 hover:text-[#00A9E8] hover:-translate-y-0.5 transition-all duration-300"
+            className="group inline-flex h-11 items-center gap-2 px-5 rounded-[2.42px] bg-white border border-slate-200 shadow-sm text-slate-700 text-sm font-semibold hover:bg-slate-50 hover:border-[#00A9E8]/50 hover:text-[#00A9E8] hover:-translate-y-0.5 transition-all duration-300"
           >
             <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -160,7 +152,7 @@ const ApplyPass = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden backdrop-blur-sm">
+        <div className="bg-white rounded-[2.42px] shadow-xl shadow-slate-200/40 border border-slate-100 overflow-hidden backdrop-blur-sm">
           {/* Profile strip */}
           <div className="px-6 sm:px-8 py-5 bg-gradient-to-r from-slate-50 to-indigo-50/30 border-b border-slate-100 flex items-center gap-4">
             <div className="relative">
@@ -207,7 +199,7 @@ const ApplyPass = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your name"
-                    className="w-full h-12 pl-4 pr-10 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm font-medium cursor-not-allowed outline-none transition-all group-hover:border-slate-300"
+                    className="w-full h-12 pl-4 pr-10 rounded-[2.42px] border border-slate-200 bg-slate-50 text-slate-500 text-sm font-medium cursor-not-allowed outline-none transition-all group-hover:border-slate-300"
                     readOnly
                   />
                   <svg className="absolute right-3.5 top-3.5 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,7 +223,7 @@ const ApplyPass = () => {
                     value={formData.admissionId}
                     onChange={handleChange}
                     placeholder="AXXXXXXXXXX"
-                    className="w-full h-12 pl-4 pr-10 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm font-medium cursor-not-allowed outline-none transition-all group-hover:border-slate-300"
+                    className="w-full h-12 pl-4 pr-10 rounded-[2.42px] border border-slate-200 bg-slate-50 text-slate-500 text-sm font-medium cursor-not-allowed outline-none transition-all group-hover:border-slate-300"
                     readOnly
                   />
                   <svg className="absolute right-3.5 top-3.5 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,7 +245,7 @@ const ApplyPass = () => {
                     <label 
                       key={courseName}
                       // ADDED selection-card and dynamic error classes
-                      className={`selection-card relative flex items-center h-12 px-4 rounded-xl border cursor-pointer hover:shadow-md ${
+                      className={`selection-card relative flex items-center h-12 px-4 rounded-[2.42px] border cursor-pointer hover:shadow-md ${
                         formData.course === courseName
                           ? 'border-[#00A9E8] bg-[#00A9E8]/5 ring-1 ring-[#00A9E8] shadow-sm'
                           : errors.course 
@@ -301,7 +293,7 @@ const ApplyPass = () => {
                     if (showLeaveSection) setShowLeaveSection(false);
                   }}
                   // ADDED selection-card and error styling
-                  className={`selection-card group relative text-left p-4 rounded-2xl border hover:shadow-md ${
+                  className={`selection-card group relative text-left p-4 rounded-[2.42px] border hover:shadow-md ${
                     formData.passType === 'Market Pass'
                       ? 'border-[#00A9E8] bg-[#00A9E8]/5 ring-1 ring-[#00A9E8]'
                       : errors.passType
@@ -310,7 +302,7 @@ const ApplyPass = () => {
                   }`}
                 >
                   <div className="flex items-center gap-4 relative z-10">
-                    <div className={`icon-bg w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${formData.passType === 'Market Pass' ? 'bg-gradient-to-br from-slate-800 to-indigo-950 text-[#00A9E8] scale-110 shadow-md' : 'bg-slate-100 text-slate-500'}`}>
+                    <div className={`icon-bg w-12 h-12 rounded-[2.42px] flex items-center justify-center transition-all duration-300 ${formData.passType === 'Market Pass' ? 'bg-gradient-to-br from-slate-800 to-indigo-950 text-[#00A9E8] scale-110 shadow-md' : 'bg-slate-100 text-slate-500'}`}>
                       <svg className="w-6 h-6 selection-icon" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293A1 1 0 005.414 17H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
@@ -337,7 +329,7 @@ const ApplyPass = () => {
                     if (!showLeaveSection) toggleLeaveSection();
                   }}
                   // ADDED selection-card and error styling
-                  className={`selection-card group relative text-left p-4 rounded-2xl border hover:shadow-md ${
+                  className={`selection-card group relative text-left p-4 rounded-[2.42px] border hover:shadow-md ${
                     formData.passType === 'Leave Pass'
                       ? 'border-[#00A9E8] bg-[#00A9E8]/5 ring-1 ring-[#00A9E8]'
                       : errors.passType
@@ -346,7 +338,7 @@ const ApplyPass = () => {
                   }`}
                 >
                   <div className="flex items-center gap-4 relative z-10">
-                    <div className={`icon-bg w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${formData.passType === 'Leave Pass' ? 'bg-gradient-to-br from-slate-800 to-indigo-950 text-[#00A9E8] scale-110 shadow-md' : 'bg-slate-100 text-slate-500'}`}>
+                    <div className={`icon-bg w-12 h-12 rounded-[2.42px] flex items-center justify-center transition-all duration-300 ${formData.passType === 'Leave Pass' ? 'bg-gradient-to-br from-slate-800 to-indigo-950 text-[#00A9E8] scale-110 shadow-md' : 'bg-slate-100 text-slate-500'}`}>
                       <svg className="w-6 h-6 selection-icon" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -369,7 +361,7 @@ const ApplyPass = () => {
               {/* Smooth Collapsible Leave Section */}
               <div className={`grid transition-all duration-500 ease-in-out ${showLeaveSection ? 'grid-rows-[1fr] opacity-100 mt-5' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                 <div className="overflow-hidden">
-                  <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/20 border border-slate-200/60 shadow-inner">
+                  <div className="p-5 rounded-[2.42px] bg-gradient-to-br from-slate-50 to-indigo-50/20 border border-slate-200/60 shadow-inner">
                     <div className="grid sm:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
@@ -382,7 +374,7 @@ const ApplyPass = () => {
                           type="date"
                           value={leaveStartDate}
                           readOnly
-                          className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-100/80 text-sm font-medium text-slate-500 cursor-not-allowed outline-none"
+                          className="w-full h-12 px-4 rounded-[2.42px] border border-slate-200 bg-slate-100/80 text-sm font-medium text-slate-500 cursor-not-allowed outline-none"
                         />
                       </div>
                       <div>
@@ -397,7 +389,7 @@ const ApplyPass = () => {
                           value={leaveEndDate}
                           onChange={(e) => setLeaveEndDate(e.target.value)}
                           min={leaveStartDate}
-                          className="w-full h-12 px-4 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00A9E8]/40 focus:border-[#00A9E8] transition-all hover:border-slate-400 shadow-sm"
+                          className="w-full h-12 px-4 rounded-[2.42px] border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00A9E8]/40 focus:border-[#00A9E8] transition-all hover:border-slate-400 shadow-sm"
                         />
                       </div>
                     </div>
@@ -411,14 +403,14 @@ const ApplyPass = () => {
               <button
                 type="button"
                 onClick={() => navigate('/view-pass')}
-                className="h-12 px-6 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 transition-all duration-300"
+                className="h-12 px-6 rounded-[2.42px] border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative h-12 px-8 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white font-bold text-sm shadow-lg shadow-indigo-950/20 hover:shadow-indigo-950/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center overflow-hidden disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                className="group relative h-12 px-8 rounded-[2.42px] bg-gradient-to-r from-slate-900 to-indigo-950 text-white font-bold text-sm shadow-lg shadow-indigo-950/20 hover:shadow-indigo-950/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center overflow-hidden disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
               >
                 <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                 <span className="relative flex items-center gap-2">
