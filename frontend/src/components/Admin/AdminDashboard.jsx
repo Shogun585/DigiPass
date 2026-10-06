@@ -142,9 +142,10 @@ const AdminDashboard = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 text-sm font-medium rounded-[2.42px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[2.42px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
           >
-            Logout
+            <span className="hidden sm:inline">Logout</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>

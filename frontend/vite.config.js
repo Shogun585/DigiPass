@@ -1,9 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'build', 
-  },
-});
+export default defineConfig(({ command }) => {
+  return {
+    plugins: [
+      react(),
+      ...(command === 'serve' ? [basicSsl()] : []),
+    ],
+    build: {
+      outDir: 'build', 
+    },
+  };
+});
