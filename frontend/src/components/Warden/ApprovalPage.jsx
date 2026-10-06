@@ -14,7 +14,6 @@ const ApprovalPage = () => {
   const navigate = useNavigate();
 
   const [viewMode, setViewMode] = useState('pending');
-  const [latePasses] = useState([]);
   const [expandedPassId, setExpandedPassId] = useState(null);
 
   const [remarks, setRemarks] = useState({});
