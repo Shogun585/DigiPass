@@ -193,7 +193,7 @@ const Login = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-300 rounded-xl shadow-inner shadow-slate-300/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
                 />
               </div>
             </div>
@@ -214,7 +214,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full pl-11 pr-11 py-3 bg-slate-100 border border-slate-300 rounded-xl shadow-inner shadow-slate-300/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
+                  className="w-full pl-11 pr-11 py-3 bg-slate-100 border border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
                 />
                 <button
                   type="button"
