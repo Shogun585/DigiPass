@@ -147,12 +147,6 @@ const Login = () => {
       {/* Form panel - Now taking 30% width */}
       <div className="w-full lg:w-[30%] flex items-center justify-center px-8 py-12 bg-white shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] relative z-20">
         <div className="w-full max-w-sm">
-          
-          {/* Mobile Only: Top Brand Identity - Increased size */}
-          <div className="lg:hidden flex items-center gap-4 mb-10 pb-6 border-b border-slate-100">
-             <img src="digipass logo.png" alt="DigiPass Logo" className="h-16 w-auto bg-slate-50 border border-slate-100 rounded-xl p-1.5" />
-             <div className="font-semibold text-lg text-slate-900 tracking-tight">DigiPass Portal</div>
-          </div>
 
           {/* Restructured Right Panel Header */}
           <div className="mb-4 text-center flex flex-col items-center">
