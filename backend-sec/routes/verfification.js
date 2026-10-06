@@ -1,11 +1,8 @@
 const express = require('express');
-const multer = require('multer');
 const prisma = require('../utils/database');
 const { getCurrentUser, requireRole } = require('../utils/oauth2');
-const { extractBarcodeFromBuffer } = require('../utils/barcode_scanner');
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 const verifyPassLogic = async (collegeId) => {
     const user = await prisma.user.findUnique({ where: { id: collegeId } });
@@ -175,25 +172,7 @@ router.post('/checkin/:pass_id', getCurrentUser, requireRole(['guard']), async(r
     }
 })
 
-router.post('/scan', getCurrentUser, requireRole(['guard']), upload.single('file'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ detail: "No image uploaded" });
-    }
 
-    const result = await extractBarcodeFromBuffer(req.file.buffer);
-
-    if (!result.ok) {
-        return res.status(400).json({ detail: `Failed to scan barcode: ${result.reason}` });
-    }
-
-    const collegeId = result.data.trim();
-    if (!collegeId) {
-        return res.status(400).json({ detail: "Barcode data is empty" });
-    }
-
-    const verificationResponse = await verifyPassLogic(collegeId);
-    res.json(verificationResponse);
-});
 
 router.get('/manual/:college_id', getCurrentUser, requireRole(['guard']), async (req, res) => {
     const verificationResponse = await verifyPassLogic(req.params.college_id);
