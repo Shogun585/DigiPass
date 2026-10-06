@@ -127,219 +127,208 @@ const VerificationPage = () => {
         </div>
 
         <div className="bg-white rounded-[3.19px] shadow-sm ring-1 ring-slate-200 overflow-hidden">
-          {/* Mode tabs */}
-          <div className="p-1.5 m-4 mb-0 bg-slate-100 rounded-[3.19px] grid grid-cols-2 gap-1">
-            <button
-              onClick={() => setScanMode('manual')}
-              className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
-                scanMode === 'manual' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Manual Entry
-            </button>
-            <button
-              onClick={() => setScanMode('scan')}
-              className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
-                scanMode === 'scan' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Scan Barcode
-            </button>
-          </div>
-
-          <div className="p-6 sm:p-8">
-            {scanMode === 'manual' ? (
-              <form onSubmit={handleManualVerify} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">College ID</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5M10 6V4a2 2 0 014 0v2M10 6h4" />
-                      </svg>
-                    </span>
-                    <input
-                      type="text"
-                      value={collegeId}
-                      onChange={(e) => setCollegeId(e.target.value)}
-                      placeholder="e.g., AXXXXCS1234"
-                      required
-                      disabled={loading}
-                      className="w-full pl-10 pr-3 py-2.5 rounded-[3.19px] bg-slate-100 border border-slate-400 shadow-inner shadow-slate-300/50 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 disabled:bg-slate-200"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 justify-end pt-2">
-                  {verificationResult && (
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="px-5 py-2.5 rounded-[3.19px] border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition"
-                    >
-                      Reset
-                    </button>
-                  )}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[3.19px] bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-60 transition"
-                  >
-                    {loading && (
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                      </svg>
-                    )}
-                    {loading ? 'Verifying…' : 'Verify Pass'}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="rounded-2xl overflow-hidden ring-4 ring-slate-100 bg-black aspect-square flex items-center justify-center relative">
-                <Scanner 
-                  formats={['code_128', 'qr_code']}
-                  onScan={(detectedCodes) => {
-                    if (detectedCodes && detectedCodes.length > 0) {
-                      handleScan(detectedCodes[0].rawValue);
-                    }
-                  }}
-                  onError={(error) => console.log(error?.message)} 
-                  options={{ delayBetweenScanAttempts: 1000 }}
-                />
-                <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-xs font-medium bg-black/40 py-1.5 backdrop-blur-md">
-                  Point camera at Student's ID Card (Barcode)
-                </div>
-              </div>
-            )}
-
-            {/* Result */}
-            {verificationResult && (
-              <div className="mt-6">
-                {verificationResult.valid ? (
-                  <div className="rounded-[3.19px] border border-emerald-200 bg-emerald-50/50 p-5">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-emerald-900">Valid Pass Found</h3>
-                        <p className="text-xs text-emerald-700">{verificationResult?.message || 'Verification successful'}</p>
-                      </div>
-                    </div>
-
-                    {verificationResult?.user_details && (
-                      <div className="bg-white rounded-[3.19px] p-4 mb-3 ring-1 ring-slate-200">
-                        <h4 className="text-sm font-semibold text-slate-900 mb-2">Student Information</h4>
-                        <Row label="Name">
-                          {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
-                        </Row>
-                        <Row label="College ID">{verificationResult.user_details?.id || 'N/A'}</Row>
-                        {verificationResult.user_details?.contact_details && (
-                          <Row label="Contact">{verificationResult.user_details.contact_details}</Row>
-                        )}
-                      </div>
-                    )}
-
-                    {verificationResult?.pass_details && (
-                      <div className="bg-white rounded-[3.19px] p-4 ring-1 ring-slate-200">
-                        <h4 className="text-sm font-semibold text-slate-900 mb-2">Pass Details</h4>
-                        <Row label="Pass Type">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-xs font-semibold ring-1 ring-indigo-100">
-                            {verificationResult.pass_details?.pass_type?.toUpperCase() || 'N/A'}
-                          </span>
-                        </Row>
-                        <Row label="Valid From">
-                          {verificationResult.pass_details?.leave_start ? formatDate(verificationResult.pass_details.leave_start) : 'N/A'}
-                        </Row>
-                        <Row label="Valid Until">
-                          {verificationResult.pass_details?.leave_end ? formatDate(verificationResult.pass_details.leave_end) : 'N/A'}
-                        </Row>
-                        <Row label="Status">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold ring-1 ring-emerald-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            {verificationResult.pass_details?.pass_status?.toUpperCase() || 'N/A'}
-                          </span>
-                        </Row>
-                      </div>
-                    )}
-                    {verificationResult?.pass_details && (
-                      <div className="mt-4 pt-4 border-t border-emerald-200/60">
-                        <h4 className="text-sm font-semibold text-slate-900 mb-3">Guard Actions</h4>
-                        
-                        {actionMessage ? (
-                          <div className={`p-3 rounded-[3.19px] text-sm font-medium ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                            {actionMessage.text}
-                          </div>
-                        ) : ( () => {
-                          const logs = verificationResult.pass_details.logs || [];
-                          const isCheckedOut = logs.length > 0 && logs[0].student_status === 'out';
-
-                          return (
-                            <div className="flex flex-col gap-3">
-                              {!isCheckedOut ? (
-                                <button
-                                  onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
-                                  disabled={actionLoading}
-                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[3.19px] bg-orange-100 text-orange-700 hover:bg-orange-200 font-semibold text-sm transition disabled:opacity-50"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                                  Check OUT Student
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
-                                  disabled={actionLoading}
-                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[3.19px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-semibold text-sm transition disabled:opacity-50"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                                  Check IN Student
-                                </button>
-                              )}
-                            </div>
-                          );
-                        }
-                          
-                        )()}
-                        
-                        {actionLoading && (
-                          <p className="text-xs text-center text-slate-500 mt-3 animate-pulse">Processing action...</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+          {verificationResult?.valid ? (
+            <div className="p-6 sm:p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Valid Pass Found</h3>
+              
+              {/* Photo */}
+              <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-xl overflow-hidden bg-slate-100 ring-4 ring-emerald-100 mb-4 shadow-md flex-shrink-0 relative">
+                {verificationResult.user_details?.photo_url ? (
+                  <img 
+                    src={verificationResult.user_details.photo_url} 
+                    alt="Student" 
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <div className="rounded-[3.19px] border border-rose-200 bg-rose-50/60 p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-rose-900">Verification Failed</h3>
-                        <p className="text-xs text-rose-700">{verificationResult?.message || 'No valid pass for current date'}</p>
-                      </div>
-                    </div>
-
-                    {verificationResult?.user_details && (
-                      <div className="bg-white rounded-[3.19px] p-4 ring-1 ring-slate-200">
-                        <p className="text-sm text-slate-700">
-                          User found:{' '}
-                          <span className="font-medium text-slate-900">
-                            {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
-                          </span>
-                        </p>
-                        <p className="text-xs text-rose-700 font-medium mt-1">No valid pass for current date</p>
-                      </div>
-                    )}
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                    <svg className="w-16 h-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="text-sm font-medium">No Photo</span>
                   </div>
                 )}
               </div>
-            )}
-          </div>
+
+              {/* User info */}
+              <div className="text-center mb-6 w-full max-w-sm">
+                <h4 className="text-2xl font-bold text-slate-900">
+                  {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
+                </h4>
+                <p className="text-slate-500 font-medium">{verificationResult.user_details?.id || 'N/A'}</p>
+                <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold ring-1 ring-emerald-200">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  {verificationResult.pass_details?.pass_type?.toUpperCase() || 'N/A'} - {verificationResult.pass_details?.pass_status?.toUpperCase() || 'N/A'}
+                </div>
+              </div>
+
+              {/* Guard Actions */}
+              <div className="w-full max-w-sm border-t border-slate-100 pt-6">
+                {actionMessage ? (
+                  <div className={`p-4 rounded-xl text-sm font-medium text-center mb-4 ${actionMessage.type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                    {actionMessage.text}
+                  </div>
+                ) : ( () => {
+                  const logs = verificationResult.pass_details?.logs || [];
+                  const isCheckedOut = logs.length > 0 && logs[0].student_status === 'out';
+
+                  return (
+                    <div className="flex flex-col gap-3">
+                      {!isCheckedOut ? (
+                        <button
+                          onClick={() => handleGuardAction('checkout', verificationResult.pass_details.pass_id)}
+                          disabled={actionLoading}
+                          className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-orange-500 text-white hover:bg-orange-600 font-bold text-base shadow-sm transition disabled:opacity-50"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                          Check OUT Student
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleGuardAction('checkin', verificationResult.pass_details.pass_id)}
+                          disabled={actionLoading}
+                          className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-base shadow-sm transition disabled:opacity-50"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                          Check IN Student
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {actionLoading && (
+                  <p className="text-xs text-center text-slate-500 mt-3 animate-pulse">Processing action...</p>
+                )}
+
+                <button
+                  onClick={handleReset}
+                  disabled={actionLoading}
+                  className="w-full mt-4 py-2.5 px-4 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-semibold text-sm transition disabled:opacity-50"
+                >
+                  Cancel / Scan Next
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Mode tabs */}
+              <div className="p-1.5 m-4 mb-0 bg-slate-100 rounded-[3.19px] grid grid-cols-2 gap-1">
+                <button
+                  onClick={() => setScanMode('manual')}
+                  className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
+                    scanMode === 'manual' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Manual Entry
+                </button>
+                <button
+                  onClick={() => setScanMode('scan')}
+                  className={`py-2 text-sm font-medium rounded-[3.19px] transition ${
+                    scanMode === 'scan' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Scan Barcode
+                </button>
+              </div>
+
+              <div className="p-6 sm:p-8">
+                {scanMode === 'manual' ? (
+                  <form onSubmit={handleManualVerify} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">College ID</label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5M10 6V4a2 2 0 014 0v2M10 6h4" />
+                          </svg>
+                        </span>
+                        <input
+                          type="text"
+                          value={collegeId}
+                          onChange={(e) => setCollegeId(e.target.value)}
+                          placeholder="e.g., AXXXXCS1234"
+                          required
+                          disabled={loading}
+                          className="w-full pl-10 pr-3 py-2.5 rounded-[3.19px] bg-slate-100 border border-slate-400 shadow-inner shadow-slate-300/50 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 disabled:bg-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 justify-end pt-2">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[3.19px] bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-md shadow-indigo-200 hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-60 transition"
+                      >
+                        {loading && (
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                          </svg>
+                        )}
+                        {loading ? 'Verifying…' : 'Verify Pass'}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="rounded-2xl overflow-hidden ring-4 ring-slate-100 bg-black aspect-square flex items-center justify-center relative">
+                    <Scanner 
+                      formats={['code_128', 'qr_code']}
+                      onScan={(detectedCodes) => {
+                        if (detectedCodes && detectedCodes.length > 0) {
+                          handleScan(detectedCodes[0].rawValue);
+                        }
+                      }}
+                      onError={(error) => console.log(error?.message)} 
+                      options={{ delayBetweenScanAttempts: 1000 }}
+                    />
+                    <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-xs font-medium bg-black/40 py-1.5 backdrop-blur-md">
+                      Point camera at Student's ID Card (Barcode)
+                    </div>
+                  </div>
+                )}
+
+                {/* Result - Only Invalid */}
+                {verificationResult && !verificationResult.valid && (
+                  <div className="mt-6">
+                    <div className="rounded-[3.19px] border border-rose-200 bg-rose-50/60 p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-rose-600 text-white flex items-center justify-center">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-rose-900">Verification Failed</h3>
+                            <p className="text-xs text-rose-700">{verificationResult?.message || 'No valid pass for current date'}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleReset}
+                          className="px-3 py-1.5 rounded-[3.19px] border border-slate-300 text-slate-700 font-medium text-xs hover:bg-slate-50 transition"
+                        >
+                          Clear
+                        </button>
+                      </div>
+
+                      {verificationResult?.user_details && (
+                        <div className="bg-white rounded-[3.19px] p-4 ring-1 ring-slate-200">
+                          <p className="text-sm text-slate-700">
+                            User found:{' '}
+                            <span className="font-medium text-slate-900">
+                              {verificationResult.user_details?.first_name || ''} {verificationResult.user_details?.last_name || ''}
+                            </span>
+                          </p>
+                          <p className="text-xs text-rose-700 font-medium mt-1">No valid pass for current date</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
