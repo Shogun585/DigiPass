@@ -391,7 +391,7 @@ const ApprovalPage = () => {
                               )}
                             </td>
                             <td className='px-6 py-4'>
-                              {pass.pass_type === 'leave' ? (
+                              {pass.pass_type === 'leave' || pass.pass_type == 'market' ? (
                                 <div className="flex items-center justify-center">
                                   <span className="hidden sm:block text-sm font-medium text-slate-900">
                                     {pass.college?.parents_phone || 'Not Provided'}
