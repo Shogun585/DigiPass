@@ -142,7 +142,7 @@ const AdminDashboard = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[3.19px] bg-white/10 hover:bg-white/20 ring-1 ring-white/20 transition"
+            className="group h-10 px-4 text-xs font-semibold rounded-[3.19px] bg-white/5 hover:bg-red-500/10 ring-1 ring-white/20 hover:ring-red-500/50 transition-all duration-300 text-white hover:text-red-400 flex items-center justify-center gap-2"
           >
             <span className="hidden sm:inline">Logout</span>
             <LogOut className="w-4 h-4" />
@@ -198,24 +198,24 @@ const AdminDashboard = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">User ID / Admission No.</label>
-                  <input type="text" required value={singleUser.id} onChange={e => setSingleUser({...singleUser, id: e.target.value.toUpperCase()})} placeholder="e.g. A2023CS001" className="w-full p-2.5 rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500 uppercase" />
+                  <input type="text" required value={singleUser.id} onChange={e => setSingleUser({...singleUser, id: e.target.value.toUpperCase()})} placeholder="e.g. A2023CS001" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500 uppercase" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
-                    <input type="text" required value={singleUser.first_name} onChange={e => setSingleUser({...singleUser, first_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.first_name} onChange={e => setSingleUser({...singleUser, first_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
-                    <input type="text" required value={singleUser.last_name} onChange={e => setSingleUser({...singleUser, last_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.last_name} onChange={e => setSingleUser({...singleUser, last_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Contact details</label>
-                    <input type="text" required value={singleUser.contact_details} onChange={e => setSingleUser({...singleUser, contact_details: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.contact_details} onChange={e => setSingleUser({...singleUser, contact_details: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Parent Email</label>
-                    <input type="text" required value={singleUser.parent_email} onChange={e => setSingleUser({...singleUser, parent_email: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.parent_email} onChange={e => setSingleUser({...singleUser, parent_email: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                 </div>
                 <div>
@@ -307,7 +307,7 @@ const AdminDashboard = () => {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Target User ID</label>
-                    <input type="text" value={manageId} onChange={e => setManageId(e.target.value.toUpperCase())} placeholder="Enter ID (e.g. A2023CS001)" className="w-full p-3 text-lg font-mono rounded border-2 border-slate-300 focus:border-slate-500 focus:outline-none uppercase" />
+                    <input type="text" value={manageId} onChange={e => setManageId(e.target.value.toUpperCase())} placeholder="Enter ID (e.g. A2023CS001)" className="w-full p-3 text-lg font-mono rounded border-1 border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:border-slate-500 focus:outline-none uppercase" />
                   </div>
 
                   <div className="bg-rose-50 border border-rose-200 rounded-[3.19px] p-5">
@@ -322,7 +322,7 @@ const AdminDashboard = () => {
                     <h3 className="font-bold text-slate-900 mb-1">Force Password Reset</h3>
                     <p className="text-xs text-slate-500 mb-4">Set a new password for this user manually.</p>
                     <div className="flex gap-2">
-                      <input type="text" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Enter new password" className="flex-1 p-2 rounded border border-slate-300 text-sm focus:outline-none focus:border-indigo-500" />
+                      <input type="text" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Enter new password" className="flex-1 p-2 rounded border border-slate-300 text-sm bg-slate-100 shadow-inner shadow-slate-900/70 focus:outline-none focus:border-indigo-500" />
                       <button disabled={loading || !manageId || !newPassword} onClick={handlePasswordReset} className="px-4 py-2 bg-slate-800 text-white text-sm font-semibold rounded hover:bg-slate-900 disabled:opacity-50 transition">
                         Reset Password
                       </button>
