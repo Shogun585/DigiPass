@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import RippleGrid from './RippleGrid';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -54,32 +55,11 @@ const Login = () => {
       {/* Brand panel - Now taking 70% width */}
       <div className="hidden lg:flex lg:w-[70%] relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
         
-        {/* Campus Background Image */}
-        <div className="absolute inset-0 bg-slate-900/40 z-10" /> {/* Dark overlay for text readability */}
-        <img 
-          src="10631219_397091063791060_417750523363641973_o.jpg" 
-          className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-luminosity" 
-          alt="IMSEC Campus Background" 
-        />
-        
-        {/* Current ambient background elements (Kept as fallback/enhancement) */}
-        <div className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 15% 30%, rgba(99,102,241,0.4), transparent 40%), radial-gradient(circle at 85% 80%, rgba(56,189,248,0.3), transparent 45%)',
-          }}
-        />
-        <div className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        />
+        <RippleGrid />
 
-        <div className="relative z-10 flex flex-col justify-between p-12 lg:p-16 text-white w-full h-full">
+        <div className="relative z-10 flex flex-col justify-between p-12 lg:p-16 text-white w-full h-full pointer-events-none">
           {/* Top Left Icon - Massively enlarged with heavier glow */}
-          <div className="relative z-20">
+          <div className="relative z-20 pointer-events-auto">
             <a href="/" className="inline-block hover:scale-105 transition-transform duration-300">
               <img 
                 src="digipass logo.png" 
@@ -115,7 +95,7 @@ const Login = () => {
             </div>
 
             {/* Feature Cards - Pushed to the absolute bottom using mt-auto */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 mt-auto border-t border-white/10 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 mt-auto border-t border-white/10 mb-4 pointer-events-auto">
               {[
                 { 
                   k: 'Always On', 
