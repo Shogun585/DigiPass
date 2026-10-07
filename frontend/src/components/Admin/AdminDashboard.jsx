@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   // Single User State
-  const [singleUser, setSingleUser] = useState({ id: '', first_name: '', last_name: '',contact_details: '', parent_email: '',   role: 'student' });
+  const [singleUser, setSingleUser] = useState({ id: '', first_name: '', last_name: '',contact_details: '', parent_email: '', parents_phone: '', role: 'student' });
 
   // Bulk Upload State
   const [csvFile, setCsvFile] = useState(null);
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     try {
       const res = await adminAPI.createUser(singleUser);
       showMessage('success', `User ${res.data.user.id} created! Default password: ${res.data.default_password}`);
-      setSingleUser({ id: '', first_name: '', last_name: '', role: 'student' });
+      setSingleUser({ id: '', first_name: '', last_name: '', contact_details: '', parent_email: '', parents_phone: '', role: 'student' });
     } catch (err) {
       showMessage('error', err.response?.data?.error || 'Failed to create user.');
     } finally {
@@ -216,6 +216,10 @@ const AdminDashboard = () => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Parent Email</label>
                     <input type="text" required value={singleUser.parent_email} onChange={e => setSingleUser({...singleUser, parent_email: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Parent's Phone</label>
+                    <input type="text" required value={singleUser.parents_phone} onChange={e => setSingleUser({...singleUser, parents_phone: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                 </div>
                 <div>
