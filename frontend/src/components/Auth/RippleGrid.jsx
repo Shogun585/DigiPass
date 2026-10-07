@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-const RippleGrid = () => {
+const RippleGrid = ({ disableRipple = false }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const RippleGrid = () => {
     window.addEventListener('resize', initGrid);
 
     const handleMouseMove = (e) => {
+      if (disableRipple) return;
       const rect = canvas.getBoundingClientRect();
       if (
         e.clientX >= rect.left && e.clientX <= rect.right &&
@@ -81,8 +82,10 @@ const RippleGrid = () => {
       mouse.active = false;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseout', handleMouseLeave);
+    if (!disableRipple) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseout', handleMouseLeave);
+    }
 
     // 5-second gliding animation loop
     const shiftInterval = setInterval(() => {
@@ -123,7 +126,6 @@ const RippleGrid = () => {
       ctx.clearRect(0, 0, width, height);
       
       // Smoothly interpolate the global offset towards the target offset
-      // A lower multiplier (like 0.02) makes the glide slower and smoother
       currentOffsetX += (targetOffsetX - currentOffsetX) * 0.02;
       currentOffsetY += (targetOffsetY - currentOffsetY) * 0.02;
 
@@ -135,7 +137,7 @@ const RippleGrid = () => {
         p.ox = p.baseOx + currentOffsetX;
         p.oy = p.baseOy + currentOffsetY;
 
-        if (mouse.active) {
+        if (mouse.active && !disableRipple) {
           let dx = p.x - mouse.x;
           let dy = p.y - mouse.y;
           let dist = Math.sqrt(dx * dx + dy * dy);

@@ -51,7 +51,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-white font-sans">
+    <div className="min-h-screen flex font-sans relative">
+      
       {/* Brand panel - Now taking 70% width */}
       <div className="hidden lg:flex lg:w-[70%] relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
         
@@ -124,8 +125,13 @@ const Login = () => {
         </div>
       </div>
 
+      {/* Moving Grid Background for Mobile Screens */}
+      <div className="lg:hidden absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 overflow-hidden">
+        <RippleGrid disableRipple={true} />
+      </div>
+
       {/* Form panel - Now taking 30% width */}
-      <div className="w-full lg:w-[30%] flex items-center justify-center px-8 py-12 bg-white shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] relative z-20">
+      <div className="w-full lg:w-[30%] flex items-center justify-center px-8 py-12 bg-transparent lg:bg-white shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] relative z-20">
         <div className="w-full max-w-sm">
 
           {/* Restructured Right Panel Header */}
@@ -135,14 +141,14 @@ const Login = () => {
               <img 
                 src="IMSEC Logo-3.jpg" 
                 alt="IMS Engineering College" 
-                className="w-[90%] max-w-[300px] h-auto object-contain rounded -mb-2"
+                className="w-[90%] max-w-[300px] h-auto object-contain rounded ml-4"
               />
             </a>
             
-            <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Hostel Management Portal</h1>
+            <h1 className="text-2xl font-semibold text-white lg:text-slate-900 tracking-tight">Hostel Management Portal</h1>
             {/* Powered By section moved up right below the header */}
             <div className="flex items-center justify-center gap-2 -mt-2 opacity-90 hover:opacity-100 transition-opacity">
-              <span className="text-[13px] text-slate-400 font-medium tracking-wide">Powered by</span>
+              <span className="text-[13px] text-slate-300 lg:text-slate-400 font-medium tracking-wide">Powered by</span>
               <img 
                 src="digipass logo.png" 
                 alt="DigiPass Logo" 
@@ -151,18 +157,18 @@ const Login = () => {
             </div>
 
             {/* Credentials text moved down and given a negative top margin to counter image padding */}
-            <p className="-mt-3 mb-2 text-sm text-center text-slate-500">
+            <p className="-mt-3 mb-2 text-sm text-center text-slate-300 lg:text-slate-500">
               Enter your campus credentials to continue.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-white lg:text-slate-700 mb-2">
                 User ID
               </label>
               <div className="relative group">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-300 lg:text-slate-400 group-focus-within:text-indigo-400 lg:group-focus-within:text-indigo-600 transition-colors">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </span>
                 <input
@@ -173,17 +179,17 @@ const Login = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
+                  className="w-full pl-11 pr-4 py-3 bg-white/90 lg:bg-slate-100 border border-white/20 lg:border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white lg:text-slate-700 mb-2">
                 Password
               </label>
               <div className="relative group">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-300 lg:text-slate-400 group-focus-within:text-indigo-400 lg:group-focus-within:text-indigo-600 transition-colors">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </span>
                 <input
@@ -194,12 +200,12 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full pl-11 pr-11 py-3 bg-slate-100 border border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
+                  className="w-full pl-11 pr-11 py-3 bg-white/90 lg:bg-slate-100 border border-white/20 lg:border-slate-300 rounded-md shadow-inner shadow-slate-900/50 text-sm text-slate-900 placeholder:text-slate-500 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-300 hover:text-white lg:text-slate-400 lg:hover:text-slate-600 focus:outline-none"
                   tabIndex={-1}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -222,7 +228,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white text-sm font-semibold tracking-wide shadow-md hover:shadow-lg hover:from-slate-800 hover:to-indigo-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3.5 mt-2 rounded-xl bg-indigo-600 lg:bg-gradient-to-r lg:from-slate-900 lg:to-indigo-950 text-white text-sm font-semibold tracking-wide shadow-md hover:shadow-lg hover:bg-indigo-700 lg:hover:from-slate-800 lg:hover:to-indigo-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -236,7 +242,7 @@ const Login = () => {
           </form>
 
           <div className="mt-10 space-y-4">
-            <p className="text-xs text-center text-slate-500 font-medium tracking-wide">
+            <p className="text-xs text-center text-slate-300 lg:text-slate-500 font-medium tracking-wide">
               Having trouble signing in? Contact your hostel office.
             </p>
             <p className="text-[11px] text-center text-slate-400 font-light tracking-wide">
