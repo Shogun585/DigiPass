@@ -60,11 +60,11 @@ const Login = () => {
         <div className="relative z-10 flex flex-col justify-between p-12 lg:p-16 text-white w-full h-full pointer-events-none">
           {/* Top Left Icon - Massively enlarged with heavier glow */}
           <div className="relative z-20 pointer-events-auto">
-            <a href="/" className="inline-block hover:scale-105 transition-transform duration-300">
+            <a href="/" className="inline-block group">
               <img 
                 src="digipass logo.png" 
                 alt="DigiPass Home" 
-                className="h-32 lg:h-[180px] w-auto object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
+                className="h-32 lg:h-[180px] w-auto object-contain transition-all duration-500 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_35px_rgba(100,200,255,0.9)] group-hover:scale-105"
               />
             </a>
           </div>
