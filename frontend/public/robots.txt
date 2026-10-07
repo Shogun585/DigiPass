@@ -1,3 +1,46 @@
-# https://www.robotstxt.org/robotstxt.html
+# =========================================================
+# DigiPass v2 - robots.txt
+# Optimized for Search Engines (SEO) & AI Agents (AEO)
+# =========================================================
+
+# ---------------------------------------------------------
+# Search Engine Optimization (SEO)
+# ---------------------------------------------------------
 User-agent: *
-Disallow: /
+Allow: /
+# Disallow protected application routes
+Disallow: /admin
+Disallow: /apply-pass
+Disallow: /view-pass
+Disallow: /warden-approval
+Disallow: /verification
+Disallow: /api/
+
+# ---------------------------------------------------------
+# Agent Engine Optimization (AEO)
+# Explicitly allowing LLMs and AI crawlers to read public information
+# ---------------------------------------------------------
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: Google-Extended
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: CCBot
+User-agent: Omgilibot
+User-agent: Omgili
+Allow: /
+# Ensure agents don't waste budget on authenticated states
+Disallow: /admin
+Disallow: /apply-pass
+Disallow: /view-pass
+Disallow: /warden-approval
+Disallow: /verification
+Disallow: /api/
+
+# ---------------------------------------------------------
+# Crawl behavior & Sitemaps
+# ---------------------------------------------------------
+# (Uncomment and replace with your actual domain when deploying)
+# Sitemap: https://yourdomain.com/sitemap.xml
