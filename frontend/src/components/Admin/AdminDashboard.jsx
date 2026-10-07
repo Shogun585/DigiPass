@@ -48,7 +48,8 @@ const AdminDashboard = () => {
       showMessage('success', `User ${res.data.user.id} created! Default password: ${res.data.default_password}`);
       setSingleUser({ id: '', first_name: '', last_name: '', contact_details: '', parent_email: '', parents_phone: '', photo: null, role: 'student' });
     } catch (err) {
-      showMessage('error', err.response?.data?.error || 'Failed to create user.');
+      console.error(err.response?.data?.error)
+      showMessage('error', 'Failed to create user.');
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,8 @@ const AdminDashboard = () => {
       setCsvFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
-      showMessage('error', err.response?.data?.error || 'Bulk upload failed.');
+      console.error(err.response?.data?.error)
+      showMessage('error', 'Bulk upload failed.');
     } finally {
       setLoading(false);
     }
@@ -122,7 +124,8 @@ const AdminDashboard = () => {
       setManageId('');
       setNewPassword('');
     } catch (err) {
-      showMessage('error', err.response?.data?.error || 'Failed to reset password.');
+      console.error(err.response?.data?.error)
+      showMessage('error', 'Failed to reset password.');
     } finally {
       setLoading(false);
     }
@@ -206,28 +209,28 @@ const AdminDashboard = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">User ID / Admission No.</label>
-                  <input type="text" required value={singleUser.id} onChange={e => setSingleUser({...singleUser, id: e.target.value.toUpperCase()})} placeholder="e.g. A2023CS001" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500 uppercase" />
+                  <input type="text" required value={singleUser.id} onChange={e => setSingleUser({...singleUser, id: e.target.value.toUpperCase()})} placeholder="AxxxxXXXxxxx" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500 uppercase" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
-                    <input type="text" required value={singleUser.first_name} onChange={e => setSingleUser({...singleUser, first_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.first_name} onChange={e => setSingleUser({...singleUser, first_name: e.target.value})} placeholder="Eg. Abhilash" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
-                    <input type="text" required value={singleUser.last_name} onChange={e => setSingleUser({...singleUser, last_name: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.last_name} onChange={e => setSingleUser({...singleUser, last_name: e.target.value})} placeholder="Eg. Singh" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Contact details</label>
-                    <input type="text" required value={singleUser.contact_details} onChange={e => setSingleUser({...singleUser, contact_details: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.contact_details} onChange={e => setSingleUser({...singleUser, contact_details: e.target.value})} placeholder="Eg. 9876543210" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Parent Email</label>
-                    <input type="text" required value={singleUser.parent_email} onChange={e => setSingleUser({...singleUser, parent_email: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.parent_email} onChange={e => setSingleUser({...singleUser, parent_email: e.target.value})} placeholder="Eg. abc@gmail.com" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Parent's Phone</label>
-                    <input type="text" required value={singleUser.parents_phone} onChange={e => setSingleUser({...singleUser, parents_phone: e.target.value})} className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
+                    <input type="text" required value={singleUser.parents_phone} onChange={e => setSingleUser({...singleUser, parents_phone: e.target.value})} placeholder="Eg. 9876543210" className="w-full p-2.5 rounded border border-slate-300 bg-slate-100 shadow-inner shadow-slate-900/70 focus:ring-2 focus:ring-indigo-500" />
                   </div>
                 </div>
                 <div>
