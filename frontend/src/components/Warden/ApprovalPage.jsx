@@ -456,7 +456,37 @@ const ApprovalPage = () => {
             </div>
             {/* Mobile View */}
             <div className="md:hidden flex flex-col divide-y divide-slate-100">
-              {displayData.map((pass, idx) => {
+              {displayData.map((item, idx) => {
+                if (viewMode === 'logs') {
+                  const log = item;
+                  const student = log.leave_pass?.college;
+                  return (
+                    <div key={log.scan_id || idx} className="flex flex-col p-4 bg-white hover:bg-slate-50 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex gap-3 items-center">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-xs shadow-inner ring-2 ring-white">
+                            {student ? (student.id || '?').slice(-2).toUpperCase() : '?'}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900">{student ? `${student.first_name} ${student.last_name}` : 'Unknown'}</p>
+                            <span className="text-xs text-slate-500">Scan #{log.scan_id}</span>
+                          </div>
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ring-1 shadow-sm ${
+                          log.action === 'checked_out' ? 'bg-orange-50 text-orange-700 ring-orange-200' : 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+                        }`}>
+                          {log.action.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs mt-3">
+                        <div className="text-slate-500">Guard: <span className="font-medium text-slate-700">{log.staff ? `${log.staff.first_name} ${log.staff.last_name}` : 'N/A'}</span></div>
+                        <div className="text-slate-500 font-medium">{formatISTTime(log.scan_time)}</div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                const pass = item;
                 const isActed = pass.pass_status && ['approved', 'rejected'].includes(pass.pass_status.toLowerCase());
                 const isExpanded = expandedPassId === pass.pass_id;
 
