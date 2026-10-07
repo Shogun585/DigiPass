@@ -164,18 +164,36 @@ const ApprovalPage = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10">
-        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Pass Management</h2>
-            <p className="text-sm text-slate-500 mt-1">Review requests and monitor late market returns.</p>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+          <div className="flex justify-between items-start w-full lg:w-auto gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Pass Management</h2>
+              <p className="text-sm text-slate-500 mt-1">Review requests and monitor late market returns.</p>
+            </div>
+            
+            {/* Refresh Button (Mobile & Tablet) */}
+            <button
+              onClick={() => {
+                if(viewMode === 'pending') loadPendingPasses();
+                if(viewMode === 'late') loadLatePasses();
+                if(viewMode === 'logs') loadLogs(currentPage);
+              }}
+              className="lg:hidden flex-shrink-0 inline-flex items-center justify-center p-2.5 sm:px-3 sm:py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition shadow-sm mt-1"
+              aria-label="Refresh Data"
+            >
+              <svg className={`w-5 h-5 sm:w-4 sm:h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="hidden sm:inline sm:ml-2">Refresh</span>
+            </button>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4 w-full lg:w-auto min-w-0">
             {/* View Mode Tabs */}
-            <div className="flex bg-slate-100 p-1 rounded-lg ring-1 ring-slate-200 overflow-x-auto">
+            <div className="flex bg-slate-100 p-1 rounded-lg ring-1 ring-slate-200 overflow-x-auto w-full sm:w-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <button
                 onClick={() => setViewMode('pending')}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
+                className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap flex items-center justify-center ${
                   viewMode === 'pending' 
                   ? 'bg-white text-indigo-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -188,7 +206,7 @@ const ApprovalPage = () => {
               </button>
               <button
                 onClick={() => setViewMode('late')}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
+                className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap text-center ${
                   viewMode === 'late' 
                   ? 'bg-white text-rose-700 shadow-md ring-1 ring-black/5' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -198,7 +216,7 @@ const ApprovalPage = () => {
               </button>
               <button
                 onClick={() => setViewMode('logs')}
-                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap ${
+                className={`flex-1 sm:flex-none px-4 py-2 text-sm font-semibold rounded-md transition-all whitespace-nowrap text-center ${
                   viewMode === 'logs' 
                   ? 'bg-white text-emerald-700 shadow-sm' 
                   : 'text-slate-500 hover:text-slate-700'
@@ -208,19 +226,19 @@ const ApprovalPage = () => {
               </button>
             </div>
 
-            {/* Refresh Button */}
+            {/* Refresh Button (Desktop) */}
             <button
               onClick={() => {
                 if(viewMode === 'pending') loadPendingPasses();
                 if(viewMode === 'late') loadLatePasses();
                 if(viewMode === 'logs') loadLogs(currentPage);
               }}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition shadow-sm"
+              className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 px-3 py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition shadow-sm"
             >
               <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              <span className="hidden sm:inline">Refresh</span>
+              <span>Refresh</span>
             </button>
           </div>
         </div>
