@@ -7,10 +7,13 @@ const csv = require("csv-parser");
 const prisma = require("../utils/database");
 const {getCurrentUser, requireRole} = require("../utils/oauth2");
 
+const { createClient } = require('@supabase/supabase-js');
+
 const router = express.Router();
 const upload = multer();
 
 const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD;
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 router.post('/users/bulk', getCurrentUser, requireRole(['admin']), upload.single('file'), async(req, res)=>{
     return res.status(404).json({
@@ -89,10 +92,28 @@ router.post('/users/bulk', getCurrentUser, requireRole(['admin']), upload.single
         });
 });
 
-router.post('/users', getCurrentUser, requireRole(['admin']), async(req, res) => {
+router.post('/users', getCurrentUser, requireRole(['admin']), upload.single('photo'), async(req, res) => {
     const {id, first_name, last_name, role, contact_details, parent_email, parents_phone} = req.body;
 
     try{
+        let photo_url = null;
+        if (req.file) {
+            const fileExt = req.file.originalname.split('.').pop();
+            const fileName = `${id}.${fileExt}`;
+            const { data, error } = await supabase.storage
+                .from('student-photos')
+                .upload(fileName, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: true
+                });
+            
+            if (error) {
+                console.error("Supabase upload error:", error);
+                return res.status(500).json({ error: "Failed to upload photo to Supabase" });
+            }
+            photo_url = fileName;
+        }
+
         const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 10);
         const newUser = await prisma.user.create({
             data : {
@@ -102,6 +123,7 @@ router.post('/users', getCurrentUser, requireRole(['admin']), async(req, res) =>
                 contact_details,
                 parent_email,
                 parents_phone,
+                photo_url,
                 password : hashedPassword,
                 role : role || 'student'
             },
