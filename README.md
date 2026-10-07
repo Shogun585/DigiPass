@@ -15,6 +15,10 @@ DigiPass introduces a secure, transparent, and scalable digital alternative.
 
 ## 🔑 Key Features
 
+### 🎨 Modern & Interactive UI
+- **Animated Authentication Page:** Features a responsive, interactive digital ripple grid background that reacts to cursor movement.
+- **Intuitive Dashboards:** Clean layouts with real-time feedback, detailed input placeholders, and robust error handling.
+
 ### 🔐 Role-Based Authentication
 - Secure JWT-based login session management.
 - Protected frontend routes and token-secured backend REST APIs.
@@ -33,7 +37,7 @@ DigiPass introduces a secure, transparent, and scalable digital alternative.
 ---
 
 ### 🛠️ Administrative & User Control
-- **Single User Creation:** Manually onboard individual students, wardens, or guards.
+- **Single User Creation:** Manually onboard individual students, wardens, or guards. Includes profile photo upload functionality for secure student identification.
 - **Bulk Import (CSV Parsing):** Efficiently import hundreds of institutional users at once. Generates downloadable password sheets matching assigned IDs.
 - **Partial Failure Resiliency:** Processes all valid accounts in a bulk upload batch while reporting clean error payloads for duplicates or corrupt structural entries.
 - **Soft Delete Routine:** Preserves historical relational data logs and gate pass accountability by safely marking users inactive rather than hard-wiping records.
@@ -68,6 +72,7 @@ If valid → ✅ **Access Granted** If invalid → ❌ **Access Denied**
 - **JSON Web Tokens (JWT)** (Secure token stateless authorization)
 - **Bcrypt** (Secure password hashing)
 - **Multer** & **CSV-Parser** (Stream-based multi-part text loading)
+- **Supabase Storage** (Cloud bucket for secure profile photo hosting)
 
 ### Database
 - **PostgreSQL**
@@ -119,6 +124,8 @@ Configure your environment file (.env):
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # connection pooling database url
 DIRECT_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # simple database connectivity url
 JWT_SECRET="your_super_secret_key"
+SUPABASE_URL="your_supabase_project_url" # Supabase project URL for cloud storage
+SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_key" # Supabase service role key for bucket access
 ```
 Generate the client instances and map schemas into your active database engine:
 ```bash
@@ -149,7 +156,7 @@ Frontend development engine targets: http://localhost:5173
 
 3. Auditing Verification: Warden updates pass state machines from pending configurations.
 
-4. Gate Evaluation: Guard runs real-time queries asserting safety records at campus exits.
+4. Gate Evaluation: Guard runs real-time queries asserting safety records and validating student identity via uploaded profile photos at campus exits.
 
 ---
 
