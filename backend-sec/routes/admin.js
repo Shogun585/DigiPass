@@ -90,7 +90,7 @@ router.post('/users/bulk', getCurrentUser, requireRole(['admin']), upload.single
 });
 
 router.post('/users', getCurrentUser, requireRole(['admin']), async(req, res) => {
-    const {id, first_name, last_name, role, contact_details, parent_email} = req.body;
+    const {id, first_name, last_name, role, contact_details, parent_email, parents_phone} = req.body;
 
     try{
         const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, 10);
@@ -101,6 +101,7 @@ router.post('/users', getCurrentUser, requireRole(['admin']), async(req, res) =>
                 last_name,
                 contact_details,
                 parent_email,
+                parents_phone,
                 password : hashedPassword,
                 role : role || 'student'
             },
