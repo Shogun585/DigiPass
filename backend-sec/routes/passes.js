@@ -332,7 +332,7 @@ router.get('/late-returns', getCurrentUser, requireRole(['warden', 'admin']), as
                     },
                     take : 1
                 },
-                user : {
+                college : {
                     select : {
                         first_name : true,
                         last_name : true,
