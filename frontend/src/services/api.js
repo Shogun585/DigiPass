@@ -79,7 +79,7 @@ export const passAPI = {
     getPendingPasses: () => api.get('/pass/pending'),
     getAllPasses: () => api.get('/pass/all'),
     updatePassStatus: (passId, status, remark = '') => {
-      api.put(`/pass/status/${passId}`, { pass_status: status.toLowerCase(), remark}) 
+      return api.put(`/pass/status/${passId}`, { pass_status: status.toLowerCase(), remark}) 
     },
     convertPass : (leaveEndDate) => {
       return api.post('/pass/convert', {leave_end : leaveEndDate})
@@ -89,7 +89,8 @@ export const passAPI = {
     },
     getLateReturns : () => api.get('/pass/late-returns'),
     addPassRemark : (passId, remark) => api.put(`/pass/remark/${passId}`, {remark}),
-    getAllLogs: (page = 1, limit = 20) => api.get(`/pass/logs?page=${page}&limit=${limit}`)
+    getAllLogs: (page = 1, limit = 20) => api.get(`/pass/logs?page=${page}&limit=${limit}`),
+    getUnified: (params) => api.get(`/pass/unified?${params.toString()}`)
   };
 
 // Verification API
