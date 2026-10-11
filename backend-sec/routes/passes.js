@@ -457,4 +457,76 @@ router.get('/logs', getCurrentUser, requireRole(['warden', 'admin']), async (req
     }
 });
 
+
+// unified warden dashboard route
+router.get('/unified', getCurrentUser, requireRole(['warden', 'admin']), async (req, res) => {
+    try {
+        const { status, college_id, start_date, end_date, returned, not_returned } = req.query;
+
+        // Build the where clause
+        let where = {};
+        
+        if (status && status !== 'All') {
+            where.pass_status = status.toLowerCase();
+        }
+        
+        if (college_id) {
+            where.college_id = {
+                contains: college_id,
+                mode: 'insensitive'
+            };
+        }
+
+        if (start_date || end_date) {
+            where.leave_start = {};
+            if (start_date) where.leave_start.gte = new Date(start_date);
+            if (end_date) where.leave_start.lte = new Date(end_date);
+        }
+
+        // Logic for returned / not_returned
+        if (returned === 'true' && not_returned === 'true') {
+            where.logs = { some: {} }; 
+        } else if (returned === 'true') {
+            where.logs = { some: { action: 'checked_in' } };
+        } else if (not_returned === 'true') {
+            where.logs = {
+                some: { action: 'checked_out' },
+                none: { action: 'checked_in' }
+            };
+        }
+
+        const passes = await prisma.leavePass.findMany({
+            where,
+            include: {
+                college: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        contact_details: true,
+                        parents_phone: true,
+                        father_phone: true,
+                        mother_phone: true,
+                        course: true,
+                        stream: true,
+                        building: true,
+                        room: true
+                    }
+                },
+                logs: {
+                    orderBy: { scan_time: 'asc' }
+                }
+            },
+            orderBy: {
+                request_time: 'desc'
+            }
+        });
+
+        res.json(passes);
+    } catch (error) {
+        console.error("Unified passes fetch error:", error);
+        res.status(500).json({ error: "Failed to fetch unified passes" });
+    }
+});
+
+
 module.exports = router;
