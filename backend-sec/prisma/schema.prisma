@@ -84,8 +84,8 @@ model LeavePass {
   pass_id      Int        @id @default(autoincrement())
   college_id   String     @db.VarChar(25)
   pass_type    PassType
-  leave_start  DateTime   @db.Date
-  leave_end    DateTime   @db.Date
+  leave_start  DateTime   @db.Timestamp(6)
+  leave_end    DateTime   @db.Timestamp(6)
   pass_status  PassStatus @default(pending)
   request_time DateTime?  @default(now()) @db.Timestamp(6)
   updated_at   DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
