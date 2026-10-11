@@ -14,6 +14,14 @@ export const getLocalDDMMYYY = (dateInput) => {
   return `${day}-${month}-${year}`;
 };
 
+export const formatPassDateTime = (dateInput) => {
+  if (!dateInput) return '-';
+  const d = new Date(dateInput);
+  const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${date} [${time}]`;
+};
+
 // Helper for HTML Date Inputs (YYYY-MM-DD)
 export const getHtmlDate = (dateInput) => {
   const d = dateInput ? new Date(dateInput) : new Date();
@@ -251,8 +259,8 @@ const ViewPass = () => {
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-500">
                     <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Pass Type</th>
-                    <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Start Date</th>
-                    <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">End Date</th>
+                    <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Departure</th>
+                    <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Return Deadline</th>
                     <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Remarks</th>
                     <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4">Status</th>
                     <th className="font-semibold uppercase tracking-wider text-xs px-6 py-4 text-right">Actions</th>
@@ -275,10 +283,8 @@ const ViewPass = () => {
                             {pass.pass_type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-medium text-slate-700 whitespace-nowrap">{given}</td>
-                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-                          {given === passEndDate ? <span className="text-slate-300">-</span> : passEndDate}
-                        </td>
+                        <td className="px-6 py-4 font-medium text-slate-700 whitespace-nowrap">{formatPassDateTime(pass.leave_start)}</td>
+                        <td className="px-6 py-4 text-slate-600 whitespace-nowrap font-medium">{formatPassDateTime(pass.leave_end)}</td>
                         <td className="px-6 py-4 text-slate-500 max-w-[200px] truncate" title={pass.remark}>
                           {pass.remark || <span className="italic text-slate-400">No remarks</span>}
                         </td>
@@ -346,12 +352,12 @@ const ViewPass = () => {
                     {isExpanded && (
                       <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Start Date</span>
-                          <span className="font-medium text-slate-700">{given}</span>
+                          <span className="text-slate-500">Departure</span>
+                          <span className="font-medium text-slate-700">{formatPassDateTime(pass.leave_start)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">End Date</span>
-                          <span className="font-medium text-slate-700">{given === passEndDate ? '-' : passEndDate}</span>
+                          <span className="text-slate-500">Return Deadline</span>
+                          <span className="font-medium text-slate-700">{formatPassDateTime(pass.leave_end)}</span>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="text-slate-500">Remarks</span>

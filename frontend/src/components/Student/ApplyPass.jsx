@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { usePass } from '../../context/PassContext';
+import { PASS_CURFEW_CONFIG, getPassCurfewIsoString, isPastTodayCurfew } from '../../constants/passConfig';
 
 const getLocalYYYYMMDD = (dateInput) => {
   const d = dateInput ? new Date(dateInput) : new Date();
@@ -12,6 +13,14 @@ const getLocalYYYYMMDD = (dateInput) => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDepartureDisplay = (d) => {
+  if (!d) return '-';
+  const dateObj = new Date(d);
+  const date = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+  const time = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${date} [${time}]`;
+};
+
 const ApplyPass = () => {
   const userDetails = JSON.parse(localStorage.getItem('user')) || {};
 
@@ -19,6 +28,7 @@ const ApplyPass = () => {
   const [showLeaveSection, setShowLeaveSection] = useState(false);
   const [leaveStartDate, setLeaveStartDate] = useState('');
   const [leaveEndDate, setLeaveEndDate] = useState('');
+  const [applicationTime, setApplicationTime] = useState(new Date());
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,6 +48,7 @@ const ApplyPass = () => {
   useEffect(() => {
     const today = getLocalYYYYMMDD();
     setLeaveStartDate(today);
+    setApplicationTime(new Date());
   }, []);
 
   const toggleLeaveSection = () => {
@@ -47,7 +58,7 @@ const ApplyPass = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Error hatana jab user select kare
+    // Error removal upon field edit
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: '' });
       setError(''); // Clear top banner error
@@ -68,14 +79,22 @@ const ApplyPass = () => {
     
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // Professional Error Message
       setError('Oops! Looks like you missed a spot. Please fill in all required fields.');
+      return;
+    }
+
+    if (formData.passType === 'Market Pass' && isPastTodayCurfew()) {
+      setError(`Cannot apply for Market Pass: Today's return deadline (${PASS_CURFEW_CONFIG.display}) has already passed.`);
       return;
     }
 
     setError(''); // Clear error on successful validation
     setIsSubmitting(true);
-    const today = getLocalYYYYMMDD();
+    const now = new Date();
+    const leaveStartIso = now.toISOString();
+    const leaveEndIso = formData.passType === 'Market Pass'
+      ? getPassCurfewIsoString(now)
+      : getPassCurfewIsoString(leaveEndDate || now);
 
     try {
       const result = await addPass({
@@ -83,8 +102,8 @@ const ApplyPass = () => {
         admissionId: formData.admissionId,
         course: formData.course,
         passType: formData.passType,
-        leave_start: today,
-        leave_end: formData.passType === 'Market Pass' ? today : leaveEndDate || today,
+        leave_start: leaveStartIso,
+        leave_end: leaveEndIso,
       });
 
       if (result.success) {
@@ -309,7 +328,10 @@ const ApplyPass = () => {
                     </div>
                     <div>
                       <p className={`selection-text font-bold text-base transition-colors ${formData.passType === 'Market Pass' ? 'text-indigo-950' : 'text-slate-700'}`}>Market Pass</p>
-                      <p className="selection-subtext text-xs font-medium text-slate-500 mt-0.5">Same-day exit & return</p>
+                      <p className="selection-subtext text-xs font-medium text-slate-500 mt-0.5">Same-day exit & return by {PASS_CURFEW_CONFIG.display}</p>
+                      {isPastTodayCurfew() && (
+                        <p className="text-[11px] font-semibold text-rose-500 mt-1">Closed for today (past {PASS_CURFEW_CONFIG.display})</p>
+                      )}
                     </div>
                   </div>
                   {formData.passType === 'Market Pass' && (
@@ -345,7 +367,7 @@ const ApplyPass = () => {
                     </div>
                     <div>
                       <p className={`selection-text font-bold text-base transition-colors ${formData.passType === 'Leave Pass' ? 'text-indigo-950' : 'text-slate-700'}`}>Leave Pass</p>
-                      <p className="selection-subtext text-xs font-medium text-slate-500 mt-0.5">Multi-day away leave</p>
+                      <p className="selection-subtext text-xs font-medium text-slate-500 mt-0.5">Multi-day away leave (return by {PASS_CURFEW_CONFIG.display})</p>
                     </div>
                   </div>
                   {formData.passType === 'Leave Pass' && (
@@ -368,14 +390,12 @@ const ApplyPass = () => {
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
-                          Departure Date
+                          Departure (Auto-Captured)
                         </label>
-                        <input
-                          type="date"
-                          value={leaveStartDate}
-                          readOnly
-                          className="w-full h-12 px-4 rounded-[3.19px] border border-slate-200 bg-slate-100/80 text-sm font-medium text-slate-500 cursor-not-allowed outline-none"
-                        />
+                        <div className="w-full h-12 px-4 rounded-[3.19px] border border-slate-200 bg-slate-100/80 text-sm font-semibold text-slate-700 flex items-center justify-between">
+                          <span>{formatDepartureDisplay(applicationTime)}</span>
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">Now</span>
+                        </div>
                       </div>
                       <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
@@ -391,6 +411,9 @@ const ApplyPass = () => {
                           min={leaveStartDate}
                           className="w-full h-12 px-4 rounded-[3.19px] border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00A9E8]/40 focus:border-[#00A9E8] transition-all hover:border-slate-400 shadow-sm"
                         />
+                        <p className="text-[11px] text-slate-500 mt-1.5 font-medium flex items-center gap-1">
+                          <span className="text-indigo-600 font-bold">•</span> Return curfew: {PASS_CURFEW_CONFIG.display} on return date
+                        </p>
                       </div>
                     </div>
                   </div>

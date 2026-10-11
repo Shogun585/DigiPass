@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getPassCurfewIsoString } from '../constants/passConfig';
 
   const API_BASE_URL = import.meta.env.VITE_API_URL;
 // Create axios instance
@@ -54,24 +55,28 @@ export const authAPI = {
 export const passAPI = {
   createPass: (passData) => {
       const now = new Date();
-      now.setHours(0,0,0,0)
-      const today = now.toISOString().split('T')[0];
-
-      console.log(`today's date : ${today}`)
       
       let passType = 'market';  
       if (passData.passType) {
-        if (passData.passType.toLowerCase().includes('market') || passData.passType === 'market') {
-          passType = 'market';
-        } else if (passData.passType.toLowerCase().includes('leave') || passData.passType === 'leave') {
+        if (passData.passType.toLowerCase().includes('leave')) {
           passType = 'leave';
+        } else if (passData.passType.toLowerCase().includes('market')) {
+          passType = 'market';
         }
       }
+
+      // Application time is exact current timestamp
+      const leaveStart = passData.leave_start || now.toISOString();
+
+      // End time is anchored to configured curfew in IST (8:30 PM IST)
+      const leaveEnd = passData.leave_end 
+        ? (passData.leave_end.includes('T') ? passData.leave_end : getPassCurfewIsoString(passData.leave_end))
+        : getPassCurfewIsoString(now);
       
       return api.post('/pass/', {
         pass_type: passType,  
-        leave_start: passData.leave_start || today,
-        leave_end: passData.leave_end || today
+        leave_start: leaveStart,
+        leave_end: leaveEnd
       });
     },
     
@@ -82,10 +87,12 @@ export const passAPI = {
       return api.put(`/pass/status/${passId}`, { pass_status: status.toLowerCase(), remark}) 
     },
     convertPass : (leaveEndDate) => {
-      return api.post('/pass/convert', {leave_end : leaveEndDate})
+      const formattedEndDate = leaveEndDate?.includes('T') ? leaveEndDate : getPassCurfewIsoString(leaveEndDate);
+      return api.post('/pass/convert', { leave_end : formattedEndDate });
     },
     extendPass : (passId, newDate) => {
-      api.post(`/pass/extend/${passId}`, {new_leave_end : newDate})
+      const formattedEndDate = newDate?.includes('T') ? newDate : getPassCurfewIsoString(newDate);
+      return api.post(`/pass/extend/${passId}`, { new_leave_end : formattedEndDate });
     },
     getLateReturns : () => api.get('/pass/late-returns'),
     addPassRemark : (passId, remark) => api.put(`/pass/remark/${passId}`, {remark}),
