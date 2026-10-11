@@ -64,6 +64,12 @@ model User {
   photo_url       String?     @db.Text
 
   parents_phone   String?     @db.VarChar(10)
+  father_phone    String?     @db.VarChar(15)
+  mother_phone    String?     @db.VarChar(15)
+  course          String?     @db.VarChar(50)
+  stream          String?     @db.VarChar(50)
+  building        String?     @db.VarChar(50)
+  room            String?     @db.VarChar(20)
   
   is_active Boolean @default(true)
 
