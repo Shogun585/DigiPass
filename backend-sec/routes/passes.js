@@ -2,6 +2,7 @@ const express = require('express');
 const prisma = require('../utils/database');
 const { getCurrentUser, requireRole } = require('../utils/oauth2');
 const { schemas, validate } = require('../utils/schemas');
+const { PASS_CURFEW_CONFIG, getPassCurfewDate, getISTDateStr } = require('../utils/constants');
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ const sendParentNotification = async (email, studentName, passType) => {
 router.post('/', getCurrentUser, requireRole(['student']), validate(schemas.passCreate), async (req, res) => {
     const { pass_type, leave_start, leave_end } = req.body;
 
-    if (pass_type.toLowerCase() === 'market' && leave_start.getTime() !== leave_end.getTime()) {
-        return res.status(400).json({ detail: "For market pass the leave start and end should be same" });
+    if (pass_type.toLowerCase() === 'market' && getISTDateStr(leave_start) !== getISTDateStr(leave_end)) {
+        return res.status(400).json({ detail: "For market pass the leave start and end should be on the same day" });
     }
 
     try {
@@ -70,11 +71,14 @@ router.post('/', getCurrentUser, requireRole(['student']), validate(schemas.pass
             });
         }
 
+        const finalLeaveStart = leave_start ? new Date(leave_start) : new Date();
+        const finalLeaveEnd = getPassCurfewDate(leave_end);
+
         const newPass = await prisma.leavePass.create({
             data: {
                 pass_type,
-                leave_start,
-                leave_end,
+                leave_start: finalLeaveStart,
+                leave_end: finalLeaveEnd,
                 pass_status: 'pending',
                 college_id: req.user.id
             }
@@ -196,7 +200,7 @@ router.post('/convert', getCurrentUser, requireRole(['student']), async(req, res
             },
             data : {
                 pass_type : 'leave',
-                leave_end : new Date(leave_end),
+                leave_end : getPassCurfewDate(leave_end),
                 pass_status : 'pending'
             }
         });
@@ -230,7 +234,7 @@ router.post('/extend/:pass_id', getCurrentUser, requireRole(['student']), async(
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const requestedEndDate = new Date(new_leave_end);
+    const requestedEndDate = getPassCurfewDate(new_leave_end);
 
     try {
         const passToExtend = await prisma.leavePass.findUnique({
