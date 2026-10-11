@@ -190,7 +190,7 @@ const ApprovalPage = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-20 bg-gradient-to-r from-[#10162F] to-[#10162F]/80 text-white shadow-lg border-b border-indigo-950/50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center transition-all duration-300">
+        <div className="max-w-[1650px] mx-auto px-4 sm:px-6 h-16 flex justify-between items-center transition-all duration-300">
           <div className="flex items-center gap-3">
             <img src="/digipass logo lateral.png" alt="DigiPass Logo" className="h-14 w-auto object-contain" />
             <span className="hidden sm:flex ml-2 px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-[10px] font-bold tracking-widest uppercase">
@@ -204,7 +204,7 @@ const ApprovalPage = () => {
         </div>
       </header>
 
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+      <main className="max-w-[1650px] w-full mx-auto px-4 sm:px-6 py-6 lg:py-8">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Pass Management</h2>
@@ -314,19 +314,19 @@ const ApprovalPage = () => {
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto hide-scrollbar">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500 font-semibold">
+            <table className="w-full text-xs lg:text-sm text-left table-auto">
+              <thead className="bg-slate-50 border-b border-slate-200 text-[11px] lg:text-xs uppercase text-slate-500 font-semibold tracking-wider">
                 <tr>
-                  <th className="px-4 py-3 min-w-[200px]">Student Info</th>
-                  <th className="px-4 py-3 min-w-[150px]">Academics</th>
-                  <th className="px-4 py-3 min-w-[150px]">Housing</th>
-                  <th className="px-4 py-3">Pass Type</th>
-                  <th className="px-4 py-3 min-w-[180px]">Pass Duration</th>
-                  <th className="px-4 py-3 min-w-[150px]">Check out</th>
-                  <th className="px-4 py-3 min-w-[150px]">Check In</th>
-                  <th className="px-4 py-3 min-w-[200px]">Parent's Contact</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 min-w-[150px] text-center">Actions</th>
+                  <th className="px-3 py-3">Student Info</th>
+                  <th className="px-2.5 py-3">Academics</th>
+                  <th className="px-2.5 py-3">Housing</th>
+                  <th className="px-2 py-3 whitespace-nowrap">Pass Type</th>
+                  <th className="px-2.5 py-3 whitespace-nowrap">Pass Duration</th>
+                  <th className="px-2.5 py-3 whitespace-nowrap">Check out</th>
+                  <th className="px-2.5 py-3 whitespace-nowrap">Check In</th>
+                  <th className="px-2.5 py-3 whitespace-nowrap">Parent's Contact</th>
+                  <th className="px-2 py-3 text-center whitespace-nowrap">Status</th>
+                  <th className="px-2.5 py-3 text-center whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -334,49 +334,46 @@ const ApprovalPage = () => {
                   const student = pass.college || {};
                   
                   return (
-                    <tr key={pass.pass_id || idx} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-4 py-4">
-                        <div className="font-bold text-slate-900">{student.first_name || 'Unknown'} {student.last_name || ''}</div>
-                        <div className="text-xs text-slate-500 font-mono mt-0.5">{student.id || pass.college_id}</div>
-                        <div className="text-xs text-slate-600 mt-1">{student.contact_details || 'No contact'}</div>
+                    <tr key={pass.pass_id || idx} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-3 py-3">
+                        <div className="font-bold text-slate-900 leading-snug">{student.first_name || 'Unknown'} {student.last_name || ''}</div>
+                        <div className="text-[11px] lg:text-xs text-slate-500 font-mono mt-0.5">{student.id || pass.college_id}</div>
+                        <div className="text-[11px] lg:text-xs text-slate-600 mt-0.5">{student.contact_details || 'No contact'}</div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="font-medium text-slate-800">{student.course || 'N/A'}</div>
-                        <div className="text-xs text-slate-500 mt-0.5">{student.stream || '-'}</div>
+                      <td className="px-2.5 py-3">
+                        <div className="font-semibold text-slate-800 leading-snug">{student.course || 'N/A'}</div>
+                        <div className="text-[11px] lg:text-xs text-slate-500 mt-0.5">{student.stream || '-'}</div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="text-slate-800">{student.building || 'N/A'}</div>
-                        <div className="text-xs text-slate-500 mt-0.5">{student.room ? `${student.room}` : '-'}</div>
+                      <td className="px-2.5 py-3">
+                        <div className="text-slate-800 leading-snug font-medium">{student.building || 'N/A'}</div>
+                        <div className="text-[11px] lg:text-xs text-slate-500 mt-0.5">{student.room ? `Room ${student.room}` : '-'}</div>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-2 py-3 whitespace-nowrap">
                         <span className="font-semibold text-slate-700 capitalize">[{pass.pass_type}]</span>
                       </td>
-                      <td className="px-4 py-4 text-xs text-slate-600 space-y-1">
-                        {/* {console.log(pass.college_id)}
-                        {console.log(formatDateTime(pass.leave_start))}
-                        {console.log(formatDateTime(pass.leave_end))} */}
+                      <td className="px-2.5 py-3 text-[11px] lg:text-xs text-slate-600 space-y-0.5 leading-tight whitespace-nowrap">
                         <div>{formatDateTime(pass.leave_start)}</div>
-                        <div className="text-slate-400">to</div>
+                        <div className="text-slate-400 text-[10px]">to</div>
                         <div>{formatDateTime(pass.leave_end)}</div>
                       </td>
-                      <td className="px-4 py-4 text-xs font-mono text-slate-600">
+                      <td className="px-2.5 py-3 text-[11px] lg:text-xs font-mono text-slate-600 leading-tight whitespace-nowrap">
                         {getLogTime(pass.logs, 'checked_out')}
                       </td>
-                      <td className="px-4 py-4 text-xs font-mono text-slate-600">
+                      <td className="px-2.5 py-3 text-[11px] lg:text-xs font-mono text-slate-600 leading-tight whitespace-nowrap">
                         {getLogTime(pass.logs, 'checked_in')}
                       </td>
-                      <td className="px-4 py-4 text-xs text-slate-700">
-                        <div className="mb-2">
-                          <span className="text-slate-500">Father - </span>
-                          <span className="font-medium">{student.father_phone || 'N/A'}</span>
-                        </div>
+                      <td className="px-2.5 py-3 text-[11px] lg:text-xs text-slate-700 whitespace-nowrap">
                         <div>
-                          <span className="text-slate-500">Mother - </span>
-                          <span className="font-medium">{student.mother_phone || 'N/A'}</span>
+                          <span className="text-slate-400">Father - </span>
+                          <span className="font-medium text-slate-800">{student.father_phone || 'N/A'}</span>
+                        </div>
+                        <div className="mt-1">
+                          <span className="text-slate-400">Mother - </span>
+                          <span className="font-medium text-slate-800">{student.mother_phone || 'N/A'}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                      <td className="px-2 py-3 text-center whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2 py-0.5 lg:px-2.5 lg:py-1 rounded-full text-[11px] lg:text-xs font-bold ${
                           pass.pass_status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
                           pass.pass_status === 'rejected' ? 'bg-rose-100 text-rose-800' :
                           'bg-amber-100 text-amber-800'
@@ -384,18 +381,18 @@ const ApprovalPage = () => {
                           {pass.pass_status ? pass.pass_status.charAt(0).toUpperCase() + pass.pass_status.slice(1) : 'Unknown'}
                         </span>
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-2.5 py-3 whitespace-nowrap">
                         {pass.pass_status === 'pending' ? (
-                          <div className="flex items-center justify-center gap-2">
+                          <div className="flex items-center justify-center gap-1.5">
                             <button 
                               onClick={() => handleApprove(pass.pass_id)}
-                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-md shadow-sm transition-colors"
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded shadow-xs transition-colors"
                             >
                               Approve
                             </button>
                             <button 
                               onClick={() => handleReject(pass.pass_id)}
-                              className="px-3 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-md shadow-sm transition-colors"
+                              className="px-2.5 py-1 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold rounded shadow-xs transition-colors"
                             >
                               Reject
                             </button>
