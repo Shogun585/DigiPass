@@ -93,7 +93,12 @@ router.post('/users/bulk', getCurrentUser, requireRole(['admin']), upload.single
 });
 
 router.post('/users', getCurrentUser, requireRole(['admin']), upload.single('photo'), async(req, res) => {
-    const {id, first_name, last_name, role, contact_details, parent_email, parents_phone} = req.body;
+    const {
+        id, first_name, last_name, role, contact_details,
+        parent_email, parents_phone,
+        father_phone, mother_phone,
+        building, room, course, stream
+    } = req.body;
 
     try{
         let photo_url = null;
@@ -121,8 +126,14 @@ router.post('/users', getCurrentUser, requireRole(['admin']), upload.single('pho
                 first_name,
                 last_name,
                 contact_details,
-                parent_email,
-                parents_phone,
+                parent_email: parent_email || null,
+                parents_phone: parents_phone || null,
+                father_phone: father_phone || null,
+                mother_phone: mother_phone || null,
+                building: building || null,
+                room: room || null,
+                course: course || null,
+                stream: stream || null,
                 photo_url,
                 password : hashedPassword,
                 role : role || 'student'
