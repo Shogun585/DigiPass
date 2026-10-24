@@ -17,18 +17,10 @@ const verifyPassLogic = async (collegeId) => {
         return { valid: false, message: `User with ID ${collegeId} not found`, pass_details: null, user_details: null };
     }
 
-    const getLocalYYYYMMDD = (dateInput) => {
-        const d = dateInput ? new Date(dateInput) : new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
     const { password, ...userWithoutPassword } = user;
-    const today = new Date(getLocalYYYYMMDD());
+    const today = new Date();
     
-    // console.log(today)
+    console.log(today)
     
     const validPass = await prisma.leavePass.findFirst({
         where: {
