@@ -1,10 +1,9 @@
-# 🚀 DigiPass
+# 🛡️ DigiPass
 
 DigiPass is a full-stack web application designed to modernize and automate hostel leave and market pass management systems.
-
 It replaces traditional paper-based workflows with a secure, role-based, real-time digital platform that streamlines pass requests, approvals, and gate verification.
 
-## ✨ Why DigiPass?
+## ⚡ Why DigiPass?
 Traditional hostel pass systems are:
 - Paper-based and inefficient
 - Time-consuming for students and wardens
@@ -13,7 +12,9 @@ Traditional hostel pass systems are:
 
 DigiPass introduces a secure, transparent, and scalable digital alternative.
 
-## 🔑 Key Features
+---
+
+## 🚀 Key Features
 
 ### 🎨 Modern & Interactive UI
 - **Animated Authentication Page:** Features a responsive, interactive digital ripple grid background that reacts to cursor movement.
@@ -23,20 +24,18 @@ DigiPass introduces a secure, transparent, and scalable digital alternative.
 - Secure JWT-based login session management.
 - Protected frontend routes and token-secured backend REST APIs.
 - Supported roles:
-    - 🎓 **Student:** Request and track pass approvals.
-    - 🏢 **Warden:** Evaluate, approve, or reject incoming requests.
-    - 🚪 **Guard:** Real-time checkpoint gate verification.
-    - 🛠️ **Admin:** Manage institutional user databases.
+  - 🎓 **Student:** Request and track pass approvals.
+  - 🧑‍🏫 **Warden:** Evaluate, approve, or reject incoming requests.
+  - 🛡️ **Guard:** Real-time check point gate verification.
+  - ⚙️ **Admin:** Manage institutional user databases.
 
----
-
-### 📝 Digital Pass Management
+### 📑 Digital Pass Management
 - **Student Dashboard:** Apply for Market Pass or Leave Pass; select predefined courses (e.g., B.Tech CSE, IT) using an interactive UI card layout; monitor real-time approval status.
 - **Warden Dashboard:** Clean interface to filter, view pending requests, track history, and single-click approve or reject passes.
 
 ---
 
-### 🛠️ Administrative & User Control
+### 👥 Administrative & User Control
 - **Single User Creation:** Manually onboard individual students, wardens, or guards. Includes profile photo upload functionality for secure student identification.
 - **Bulk Import (CSV Parsing):** Efficiently import hundreds of institutional users at once. Generates downloadable password sheets matching assigned IDs.
 - **Partial Failure Resiliency:** Processes all valid accounts in a bulk upload batch while reporting clean error payloads for duplicates or corrupt structural entries.
@@ -45,23 +44,23 @@ DigiPass introduces a secure, transparent, and scalable digital alternative.
 
 ---
 
-### 🚪 Smart Gate Verification
-DigiPass enhances campus security through quick identification verification at institutional gates.
+### 🪪 Smart Gate Verification
+DigiPass enhances campus security through quick identification verification at institutional gates:
 1. Guard input/scanning handles student identification tokens.
 2. System extracts individual student keys.
 3. Verification checks:
-    * Pass status evaluates to **Approved**.
-    * Current timestamp falls within the pass validity range.
-
-If valid → ✅ **Access Granted** If invalid → ❌ **Access Denied**
+   - Pass status evaluates to **Approved**.
+   - Current timestamp falls within the pass validity range.
+   - If valid ➔ ✅ **Access Granted**
+   - If invalid ➔ ❌ **Access Denied**
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
-- **React.js** & Functional Components
-- **React Router Dom** (Client-side routing)
+- **React.js** & Web Components
+- **React Router DOM** (Client-side routing)
 - **Axios** (API Client)
 - **Tailwind CSS** (Modern utility-first layout)
 - **Context API** (Global state & Auth state management)
@@ -72,7 +71,7 @@ If valid → ✅ **Access Granted** If invalid → ❌ **Access Denied**
 - **JSON Web Tokens (JWT)** (Secure token stateless authorization)
 - **Bcrypt** (Secure password hashing)
 - **Multer** & **CSV-Parser** (Stream-based multi-part text loading)
-- **Supabase Storage** (Cloud bucket for secure profile photo hosting)
+- **Neon Object Storage** (S3-compatible bucket for student profile photos with legacy Supabase fallback)
 
 ### Database
 - **PostgreSQL**
@@ -84,17 +83,18 @@ If valid → ✅ **Access Granted** If invalid → ❌ **Access Denied**
 DigiPass/
 │
 ├── backend-sec/            # Node.js + Express API
-│   ├── routers/            # Auth, Pass, Admin routes
-│   ├── utils/              # Database connection pools
+│   ├── routes/             # Auth, Pass, Admin, Verification routes
+│   ├── utils/              # Database connection pools, storage utility
+│   ├── scripts/            # Migration scripts (e.g. migrate-photos-to-neon.js)
 │   ├── prisma/             # Schema definitions and migrations
-│   └── index.js            # Entry server file
+│   └── server.js           # Entry server file
 │
 ├── frontend/               # React SPA Client
 │   ├── src/
 │   │   ├── components/     # UI Elements
 │   │   ├── pages/          # Dashboard, Admin, Login views
 │   │   ├── context/        # Global authentication states
-│   │   ├── services/       # Axio API wrappers (api.js)
+│   │   ├── services/       # Axios API wrappers (api.js)
 │   │   └── App.jsx
 │
 └── README.md
@@ -105,7 +105,7 @@ DigiPass/
 
 ### 1️⃣ Clone Repository
 ```bash
-git clone [https://github.com/Shogun585/DigiPass.git](https://github.com/Shogun585/DigiPass.git)
+git clone https://github.com/Shogun585/DigiPass.git
 cd DigiPass
 ```
 ### 2️⃣ Backend Setup
@@ -117,15 +117,24 @@ npm install
 Create your environment file (.env):
 ```bash
 cd backend-sec
-touch .env
+cp .env.example .env
 ```
 Configure your environment file (.env):
-```
+```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # connection pooling database url
 DIRECT_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public" # simple database connectivity url
 JWT_SECRET="your_super_secret_key"
-SUPABASE_URL="your_supabase_project_url" # Supabase project URL for cloud storage
-SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_key" # Supabase service role key for bucket access
+
+# Neon Object Storage (Primary)
+NEON_STORAGE_ENDPOINT="https://<branch-id>.<region>.aws.neon.tech"
+NEON_ACCESS_KEY_ID="nak_your_access_key_id"
+NEON_SECRET_ACCESS_KEY="your_secret_access_key"
+NEON_STORAGE_BUCKET="student-photos"
+NEON_STORAGE_REGION="us-east-1"
+
+# Legacy Supabase Storage (Fallback during migration)
+SUPABASE_URL="your_supabase_project_url"
+SUPABASE_SERVICE_ROLE_KEY="your_supabase_service_role_key"
 ```
 Generate the client instances and map schemas into your active database engine:
 ```bash
@@ -145,27 +154,20 @@ cd frontend
 npm install
 npm run dev
 ```
-Frontend development engine targets: http://localhost:5173
+Frontend development engine targets: https://localhost:5173
 
 ---
 
-## 🧪 Application Flow
-1. Administrative Setup: Bulk uploads or appends user data via CSV schema records.
-
-2. Pass Issuance: Student submits validated pass scopes targeting local schedules.
-
-3. Auditing Verification: Warden updates pass state machines from pending configurations.
-
-4. Gate Evaluation: Guard runs real-time queries asserting safety records and validating student identity via uploaded profile photos at campus exits.
+## 🔁 Application Flow
+1. **Administrative Setup:** Bulk uploads or appends user data via CSV schema records.
+2. **Pass Issuance:** Student submits validated pass scopes targeting local schedules.
+3. **Auditing Verification:** Warden updates pass state machines from pending configurations.
+4. **Gate Evaluation:** Guard runs real-time queries asserting safety records and validating student identity via uploaded profile photos at campus exits.
 
 ---
 
-## 🌱 Benefits
-
-* Reduces manual paperwork footprint.
-
-* Sharpens structural tracking and accountability data streams.
-
-* Enhances multi-tier hostel edge security parameters.
-
-* Eco-friendly digital log maintenance.
+## 📈 Benefits
+- Reduces manual paperwork footprint.
+- Sharpens structural tracking and accountability data streams.
+- Enhances multi-tier hostel edge security parameters.
+- Eco-friendly digital log maintenance.
