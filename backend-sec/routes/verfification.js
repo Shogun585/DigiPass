@@ -1,12 +1,8 @@
 const express = require('express');
 const prisma = require('../utils/database');
 const { getCurrentUser, requireRole } = require('../utils/oauth2');
-const { createClient } = require('@supabase/supabase-js');
+const { getStudentPhotoSignedUrl } = require('../utils/storage');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder'
-);
 
 const router = express.Router();
 
@@ -64,24 +60,10 @@ const verifyPassLogic = async (collegeId) => {
 
     let signedPhotoUrl = null;
     if (userWithoutPassword.photo_url) {
-        // Sanitize the photo_url in case it contains a full URL, leading slashes, or whitespace
-        let cleanPath = userWithoutPassword.photo_url.trim();
-        // If it's a full URL, get just the last part (the filename)
-        if (cleanPath.startsWith('http')) {
-            const urlParts = cleanPath.split('/');
-            cleanPath = urlParts[urlParts.length - 1];
-        }
-        // Remove leading slashes
-        cleanPath = cleanPath.replace(/^\/+/, '');
-        
-        const { data, error } = await supabase.storage
-          .from('student-photos')
-          .createSignedUrl(cleanPath, 60);
-          
-        if (data) {
-            signedPhotoUrl = data.signedUrl;
-        } else {
-            console.error('[Supabase] Error generating signed URL:', error);
+        try {
+            signedPhotoUrl = await getStudentPhotoSignedUrl(userWithoutPassword.photo_url, 60);
+        } catch (storageErr) {
+            console.error('[Storage] Error generating signed URL:', storageErr);
         }
     }
     userWithoutPassword.photo_url = signedPhotoUrl;
